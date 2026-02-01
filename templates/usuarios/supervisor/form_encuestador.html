@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">{{ titulo }}</h2>
+            <p class="text-sm text-gray-500">Completa la ficha técnica del encuestador.</p>
+        </div>
+        <a href="{% url 'listar_mi_equipo' %}" class="text-gray-900 hover:text-blue-600 font-medium text-sm flex items-center">
+            <svg class="w-4 h-4 me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Volver al equipo
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+
+        <form method="POST" class="p-6 md:p-8 space-y-8" id="form-encuestador">
+            {% csrf_token %}
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 me-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+                    Datos Personales
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-1">
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Nombres</label>
+                        {{ form.nombres }}
+                        {{ form.nombres.errors }}
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Apellidos</label>
+                        {{ form.apellidos }}
+                        {{ form.apellidos.errors }}
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">DNI / Pasaporte</label>
+                        {{ form.dni }}
+                        {{ form.dni.errors }}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Fecha de Nacimiento</label>
+                        {{ form.fecha_nacimiento }}
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Edad</label>
+                        {{ form.edad }}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Sexo</label>
+                        {{ form.sexo }}
+                    </div>
+
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Correo Electrónico</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono / Celular</label>
+                            {{ form.telefono }}
+                            {{ form.telefono.errors }}
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Dirección de Domicilio</label>
+                            {{ form.direccion }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-200">
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 me-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                    Información Académica
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <div class="block mb-2 text-sm font-medium text-gray-900">
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Institución Asignada</label>
+                            {{ form.institucion_asignada }}
+                            {{ form.institucion_asignada.errors }}
+                        </div>
+                        <div class="block mb-2 text-sm font-medium text-gray-900">
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Institución de Procedencia</label>
+                            {{ form.institucion_procedencia }}
+                            {{ form.institucion_procedencia.errors }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Carrera / Especialidad</label>
+                        {{ form.especialidad }}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Ciclo</label>
+                            {{ form.ciclo }}
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900">Cód. Alumno</label>
+                            {{ form.codigo }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-200">
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 me-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Credenciales de Acceso
+                </h3>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+                        {{ form.password }}
+                        <p class="mt-1 text-xs text-gray-500">Dejar vacío para mantener la contraseña actual.</p>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex items-center h-5">
+                            {{ form.is_active }}
+                        </div>
+                        <div class="ms-2 text-sm">
+                            <label for="{{ form.is_active.id_for_label }}" class="font-medium text-gray-900">Habilitar acceso</label>
+                            <p class="text-gray-500">Si desmarcas esto, el encuestador no podrá iniciar sesión.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4">
+                <a href="{% url 'listar_mi_equipo' %}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5">
+                    Cancelar
+                </a>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 shadow-md">
+                    Guardar Encuestador
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    // Interceptamos el envío del formulario
+    document.getElementById('form-encuestador').addEventListener('submit', function(e) {
+        e.preventDefault(); // Detenemos el envío automático
+
+        Swal.fire({
+            title: '¿Guardar información?',
+            text: "Estás a punto de registrar estos datos en tu equipo.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true, // Pone el botón confirmar a la derecha (estilo moderno)
+            buttonsStyling: false, // Usamos clases de Tailwind
+            customClass: {
+                // Botón Azul (Confirmar) - Idéntico a tus botones de guardar
+                confirmButton: 'text-white bg-brand-600 hover:bg-brand-700 focus:ring-4 focus:outline-none focus:ring-brand-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3',
+                
+                // Botón Rojo (Cancelar)
+                cancelButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si confirma, mostramos loading y enviamos el formulario
+                Swal.fire({
+                    title: 'Guardando...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                
+                // Enviamos el formulario manualmente
+                setTimeout(() => {
+                    this.submit();
+                }, 800);
+            }
+        });
+    });
+</script>
+{% endblock %}

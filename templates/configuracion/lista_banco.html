@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Banco de Preguntas</h1>
+            <p class="text-sm text-gray-500">Configura dimensiones e ítems de evaluación.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'crear_dimension' %}" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-lg text-sm px-4 py-2 flex items-center gap-2">
+                + Nueva Dimensión
+            </a>
+            <a href="{% url 'crear_pregunta' %}" class="bg-blue-600 text-white hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2 flex items-center gap-2 shadow-sm">
+                + Nueva Pregunta
+            </a>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        {% for dim in dimensiones %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-700 font-bold rounded-full text-sm">{{ dim.orden }}</span>
+                    <h3 class="font-bold text-gray-800 text-lg">{{ dim.nombre }}</h3>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'editar_dimension' dim.pk %}" class="text-xs font-bold text-blue-600 hover:underline uppercase">Editar</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{% url 'eliminar_elemento' 'dimension' dim.pk %}" onclick="return confirm('Se borrarán todas las preguntas dentro. ¿Seguro?')" class="text-xs font-bold text-red-500 hover:underline uppercase">Eliminar</a>
+                </div>
+            </div>
+
+            <div class="divide-y divide-gray-100">
+                {% for pregunta in dim.preguntas.all %}
+                <div class="px-6 py-4 flex items-start justify-between group hover:bg-blue-50/50 transition">
+                    <div class="flex gap-4">
+                        <span class="text-gray-400 font-mono text-sm mt-0.5">{{ pregunta.orden }}.</span>
+                        <p class="text-gray-700 text-sm font-medium leading-relaxed">{{ pregunta.enunciado }}</p>
+                    </div>
+                    <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'editar_pregunta' pregunta.pk %}" class="text-gray-400 hover:text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></a>
+                        <a href="{% url 'eliminar_elemento' 'pregunta' pregunta.pk %}" onclick="return confirm('¿Borrar pregunta?')" class="text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="px-6 py-4 text-center text-gray-400 italic text-sm">No hay preguntas registradas en esta dimensión.</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

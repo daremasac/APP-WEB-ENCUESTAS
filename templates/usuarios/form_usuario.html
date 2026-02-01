@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto"> <div class="mb-6 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-900">{{ titulo }}</h2>
+        <a href="{% url 'lista_usuarios' %}" class="text-brand-600 hover:text-brand-800 font-medium text-sm">
+            ← Volver al listado
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <form method="POST" id="formUsuario">
+            {% csrf_token %}
+            
+            <h3 class="text-lg font-semibold text-brand-700 mb-4 border-b pb-2 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                Acceso y Rol
+            </h3>
+            <div class="grid gap-6 mb-6 md:grid-cols-3">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Correo Electrónico *</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Rol del Usuario *</label>
+                    {{ form.rol }} </div>
+                <div class="flex items-center md:col-span-3">
+                    <label class="inline-flex items-center cursor-pointer">
+                        {{ form.is_active }}
+                        <span class="ms-3 text-sm font-medium text-gray-900">Usuario Activo (Permitir ingreso al sistema)</span>
+                    </label>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-brand-700 mb-4 border-b pb-2 mt-8 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Información Personal
+            </h3>
+            <div class="grid gap-6 mb-6 md:grid-cols-3">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Nombres *</label>
+                    {{ form.nombres }}
+                    {% if form.nombres.errors %}<p class="text-red-500 text-xs mt-1">{{ form.nombres.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Apellidos *</label>
+                    {{ form.apellidos }}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">DNI o PS *</label>
+                    {{ form.dni }}
+                    {% if form.dni.errors %}<p class="text-red-500 text-xs mt-1">{{ form.dni.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Fecha Nacimiento</label>
+                    {{ form.fecha_nacimiento }}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Edad</label>
+                    {{ form.edad }}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Sexo</label>
+                    {{ form.sexo }}
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono / Celular</label>
+                    {{ form.telefono }}
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Dirección</label>
+                    {{ form.direccion }}
+                </div>
+            </div>
+
+            <div id="seccion-supervisor" class="hidden">
+                <h3 class="text-lg font-semibold text-blue-700 mb-4 border-b pb-2 mt-8 flex items-center bg-blue-50 p-2 rounded">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.141.025v-.025zm5.586-7.586A2 2 0 0012.414 6h-.828a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00.707 1.707H16m0 0a1 1 0 001-1V5a1 1 0 00-1-1h-2.586z"/></svg>
+                    Datos Profesionales (Supervisor)
+                </h3>
+                <div class="grid gap-6 mb-6 md:grid-cols-3">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Profesión *</label>
+                        {{ form.profesion }}
+                        {% if form.profesion.errors %}<p class="text-red-500 text-xs mt-1">{{ form.profesion.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">N° Colegiatura *</label>
+                        {{ form.numero_colegiatura }}
+                        {% if form.numero_colegiatura.errors %}<p class="text-red-500 text-xs mt-1">{{ form.numero_colegiatura.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Centro de Labores</label>
+                        {{ form.centro_labores }}
+                        {% if form.centro_labores.errors %}<p class="text-red-500 text-xs mt-1">{{ form.centro_labores.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="seccion-encuestador" class="hidden">
+                <h3 class="text-lg font-semibold text-green-700 mb-4 border-b pb-2 mt-8 flex items-center bg-green-50 p-2 rounded">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Datos Académicos (Encuestador)
+                </h3>
+                <div class="grid gap-6 mb-6 md:grid-cols-3">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Código Alumno *</label>
+                        {{ form.codigo }}
+                        {% if form.codigo.errors %}<p class="text-red-500 text-xs mt-1">{{ form.codigo.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Institución</label>
+                        {{ form.institucion_procedencia }}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Ciclo *</label>
+                        {{ form.ciclo }}
+                        {% if form.ciclo.errors %}<p class="text-red-500 text-xs mt-1">{{ form.ciclo.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Especialidad *</label>
+                        {{ form.especialidad }}
+                        {% if form.especialidad.errors %}<p class="text-red-500 text-xs mt-1">{{ form.especialidad.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Supervisor Asignado</label>
+                        {{ form.supervisor_asignado }}
+                        <p class="text-xs text-gray-500 mt-1">Selecciona al docente a cargo.</p>
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Institución Asignada</label>
+                        {{ form.institucion_asignada }}
+                        <p class="text-xs text-gray-500 mt-1">Lugar donde hará las encuestas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 border-t pt-4">
+                <button type="button" onclick="confirmarGuardado()" class="text-white bg-brand-600 hover:bg-brand-700 focus:ring-4 focus:outline-none focus:ring-brand-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+                    Guardar Usuario
+                </button>
+                <a type="button" href="{% url 'lista_usuarios' %}"
+                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 mt-2 md:mt-0 text-center">
+                    Cancelar
+                </a>
+            </div>
+          
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // --- 1. MOSTRAR/OCULTAR CAMPOS (Y habilitar/deshabilitar para que viajen al server) ---
+    function toggleCampos() {
+        const rol = document.getElementById('select-rol').value;
+        const secSupervisor = document.getElementById('seccion-supervisor');
+        const secEncuestador = document.getElementById('seccion-encuestador');
+
+        const configurarSeccion = (div, mostrar) => {
+            const inputs = div.querySelectorAll('input, select');
+            if (mostrar) {
+                div.classList.remove('hidden');
+                inputs.forEach(input => input.disabled = false); // IMPORTANTE: Habilitar para enviar
+            } else {
+                div.classList.add('hidden');
+                inputs.forEach(input => input.disabled = true);  // IMPORTANTE: Deshabilitar para no validar
+            }
+        };
+
+        if (rol === 'SUPERVISOR') {
+            configurarSeccion(secSupervisor, true);
+            configurarSeccion(secEncuestador, false);
+        } else if (rol === 'ENCUESTADOR') {
+            configurarSeccion(secSupervisor, false);
+            configurarSeccion(secEncuestador, true);
+        } else {
+            // Admin: Ocultar todo
+            configurarSeccion(secSupervisor, false);
+            configurarSeccion(secEncuestador, false);
+        }
+    }
+
+    // --- 2. CONFIRMACIÓN Y ENVÍO CON ESTILO PRO ---
+    function confirmarGuardado() {
+        const formulario = document.getElementById('formUsuario');
+
+        // A. Validación Visual (Globos del navegador)
+        // Esto es vital para que te avise si falta el DNI o algún campo visible
+        if (!formulario.checkValidity()) {
+            formulario.reportValidity();
+            return;
+        }
+
+        // B. Alerta SweetAlert Personalizada (Estilo Flowbite/Tailwind)
+        Swal.fire({
+            title: '¿Guardar usuario?',
+            text: "Se actualizará la base de datos del sistema.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true, // Pone el botón de cancelar a la izquierda (UX estándar)
+            
+            // --- AQUÍ ESTÁ LA MEJORA VISUAL ---
+            buttonsStyling: false, // Apagamos los estilos feos por defecto
+            customClass: {
+                // Botón Azul (Confirmar) - Idéntico a tus botones de guardar
+                confirmButton: 'text-white bg-brand-600 hover:bg-brand-700 focus:ring-4 focus:outline-none focus:ring-brand-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3',
+                
+                // Botón Rojo (Cancelar)
+                cancelButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // C. Feedback de Carga (Spinner)
+                Swal.fire({
+                    title: 'Procesando...',
+                    text: 'Validando roles y guardando información.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading(); // Activa el spinner
+                    }
+                });
+
+                // Pequeña pausa (800ms) para que se aprecie la animación antes de enviar
+                setTimeout(() => {
+                    formulario.submit();
+                }, 800);
+            }
+        });
+    }
+
+   // Inicializar lógica al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleCampos();
+    });
+</script>
+{% endblock %}
+

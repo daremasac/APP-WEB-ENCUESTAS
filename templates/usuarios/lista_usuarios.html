@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
+            <p class="text-gray-500 text-sm">Panel de control de personal y accesos.</p>
+        </div>
+        <a href="{% url 'crear_usuario' %}" class="mt-4 md:mt-0 text-white bg-brand-600 hover:bg-brand-700 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center shadow-md transition-all hover:shadow-lg">
+            <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Nuevo Usuario
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <a href="?rol=SUPERVISOR{% if query %}&q={{ query }}{% endif %}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition border-l-4 border-l-blue-500 group {% if filtro_rol == 'SUPERVISOR' %}ring-2 ring-blue-300 bg-blue-50{% endif %}">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="mb-1 text-2xl font-bold tracking-tight text-gray-900">{{ total_supervisores }}</h5>
+                    <p class="font-normal text-gray-500 group-hover:text-blue-600">Supervisores</p>
+                </div>
+                <div class="p-3 bg-blue-100 rounded-full text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="?rol=ENCUESTADOR{% if query %}&q={{ query }}{% endif %}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition border-l-4 border-l-green-500 group {% if filtro_rol == 'ENCUESTADOR' %}ring-2 ring-green-300 bg-green-50{% endif %}">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="mb-1 text-2xl font-bold tracking-tight text-gray-900">{{ total_encuestadores }}</h5>
+                    <p class="font-normal text-gray-500 group-hover:text-green-600">Encuestadores</p>
+                </div>
+                <div class="p-3 bg-green-100 rounded-full text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="?rol=ADMIN{% if query %}&q={{ query }}{% endif %}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition border-l-4 border-l-purple-500 group {% if filtro_rol == 'ADMIN' %}ring-2 ring-purple-300 bg-purple-50{% endif %}">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="mb-1 text-2xl font-bold tracking-tight text-gray-900">{{ total_admins }}</h5>
+                    <p class="font-normal text-gray-500 group-hover:text-purple-600">Administradores</p>
+                </div>
+                <div class="p-3 bg-purple-100 rounded-full text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <form method="GET" class="flex gap-4 items-center">
+            
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" name="q" value="{{ query }}" 
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand-600 focus:border-brand-600 block w-full ps-10 p-2.5" 
+                       placeholder="Buscar en todo el sistema (DNI, Nombre, Universidad, etc)...">
+            </div>
+            
+            <button type="submit" class="text-white bg-gray-800 hover:bg-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 transition">Buscar</button>
+            
+            {% if query %}
+            <a href="{% url 'lista_usuarios' %}" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-lg text-sm px-5 py-2.5 transition whitespace-nowrap">
+                Limpiar
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg border border-gray-200 bg-white">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Usuario</th>
+                    <th scope="col" class="px-6 py-3">Rol</th>
+                    <th scope="col" class="px-6 py-3">Datos Académicos / Prof.</th>
+                    <th scope="col" class="px-6 py-3">Estado</th>
+                    <th scope="col" class="px-6 py-3">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr class="bg-white border-b hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-100 flex flex-shrink-0 items-center justify-center text-brand-700 font-bold border border-brand-200">
+                            {{ u.nombres|slice:":1" }}{{ u.apellidos|slice:":1" }}
+                        </div>
+                        <div>
+                            <div class="text-base font-semibold text-gray-900">{{ u.nombres }} {{ u.apellidos }}</div>
+                            <div class="font-normal text-gray-500 text-xs">{{ u.email }}</div>
+                            {% if u.dni %}
+                                <div class="font-normal text-gray-400 text-xs mt-0.5">DNI: {{ u.dni }}</div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if u.rol == 'ADMIN' %}
+                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded border border-purple-400">Admin</span>
+                        {% elif u.rol == 'SUPERVISOR' %}
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded border border-blue-400">Supervisor</span>
+                        {% else %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded border border-green-400">Encuestador</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if u.rol == 'SUPERVISOR' %}
+                            <div class="text-xs text-gray-600">
+                                {% if u.numero_colegiatura %}
+                                    <span class="block"><b>Col:</b> {{ u.numero_colegiatura }}</span>
+                                {% endif %}
+                                {% if u.profesion %}
+                                    <span class="block">{{ u.profesion }}</span>
+                                {% endif %}
+                            </div>
+                        {% elif u.rol == 'ENCUESTADOR' %}
+                            <div class="text-xs text-gray-600">
+                                {% if u.institucion_procedencia %}
+                                    <span class="block font-medium truncate max-w-[150px]" title="{{ u.institucion_procedencia }}">{{ u.institucion_procedencia }}</span>
+                                {% endif %}
+                                {% if u.especialidad %}
+                                    <span class="block text-gray-400 truncate max-w-[150px]">{{ u.especialidad }}</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="text-xs text-gray-400">--</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if u.is_active %}
+                            <div class="flex items-center"><div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Activo</div>
+                        {% else %}
+                            <div class="flex items-center"><div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Inactivo</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                             <a href="{% url 'detalle_usuario' u.pk %}" class="font-medium text-white bg-blue-500 rounded-lg p-2 hover:bg-blue-600 shadow-sm transition" title="Ver Detalle">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            </a>
+                            <a href="{% url 'editar_usuario' u.pk %}" class="font-medium text-white bg-brand-600 rounded-lg p-2 hover:bg-brand-700 shadow-sm transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </a>
+                            <button onclick="confirmarEliminar('{{ u.pk }}', '{{ u.nombres }}')" class="font-medium text-white bg-red-600 rounded-lg p-2 hover:bg-red-700 shadow-sm transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center bg-gray-50 text-gray-500">
+                        No se encontraron resultados{% if query %} para "{{ query }}"{% endif %}.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if usuarios.has_other_pages %}
+        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div class="flex flex-1 justify-between sm:hidden">
+                {% if usuarios.has_previous %}
+                    <a href="?page={{ usuarios.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filtro_rol %}&rol={{ filtro_rol }}{% endif %}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Anterior</a>
+                {% endif %}
+                {% if usuarios.has_next %}
+                    <a href="?page={{ usuarios.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filtro_rol %}&rol={{ filtro_rol }}{% endif %}" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Siguiente</a>
+                {% endif %}
+            </div>
+            
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Mostrando <span class="font-medium">{{ usuarios.start_index }}</span> a <span class="font-medium">{{ usuarios.end_index }}</span> de <span class="font-medium">{{ usuarios.paginator.count }}</span> resultados
+                    </p>
+                </div>
+                <div>
+                    <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                        {% if usuarios.has_previous %}
+                            <a href="?page={{ usuarios.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filtro_rol %}&rol={{ filtro_rol }}{% endif %}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Anterior</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                            </a>
+                        {% endif %}
+
+                        {% for i in usuarios.paginator.page_range %}
+                            {% if usuarios.number == i %}
+                                <span class="relative z-10 inline-flex items-center bg-brand-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">{{ i }}</span>
+                            {% elif i > usuarios.number|add:'-3' and i < usuarios.number|add:'3' %}
+                                <a href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if filtro_rol %}&rol={{ filtro_rol }}{% endif %}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if usuarios.has_next %}
+                            <a href="?page={{ usuarios.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filtro_rol %}&rol={{ filtro_rol }}{% endif %}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Siguiente</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmarEliminar(id, nombre) {
+        Swal.fire({
+            title: '¿Eliminar usuario?',
+            text: `Se eliminará permanentemente a "${nombre}". Esta acción no se puede deshacer.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3',
+                cancelButton: 'text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Feedback de procesando
+                Swal.fire({
+                    title: 'Eliminando...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Redirección para eliminar
+                window.location.href = `/usuarios/eliminar/${id}/`;
+            }
+        })
+    }
+</script>
+{% endblock %}

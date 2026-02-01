@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Panel General</h1>
+            <p class="text-gray-500">Resumen de operaciones del día: <span class="font-semibold text-gray-700">{% now "l, d F Y" %}</span></p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'crear_usuario' %}" class="text-white bg-gray-800 hover:bg-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center">
+                <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                Nuevo Usuario
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Encuestas Hoy</p>
+                <p class="text-3xl font-bold text-blue-600 mt-1">{{ kpi_hoy }}</p>
+            </div>
+            <div class="p-3 bg-blue-50 rounded-full text-blue-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Por Revisar</p>
+                <p class="text-3xl font-bold text-amber-500 mt-1">{{ kpi_pendientes }}</p>
+            </div>
+            <div class="p-3 bg-amber-50 rounded-full text-amber-500">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Encuestadores</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">{{ kpi_encuestadores }}</p>
+            </div>
+            <div class="p-3 bg-gray-100 rounded-full text-gray-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Histórico</p>
+                <p class="text-3xl font-bold text-purple-600 mt-1">{{ kpi_total_fichas }}</p>
+            </div>
+            <div class="p-3 bg-purple-50 rounded-full text-purple-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-gray-800">Actividad en Tiempo Real</h3>
+            <a href="#" class="text-sm text-blue-600 hover:underline font-medium">Ver todas las encuestas</a>
+        </div>
+        
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Hora</th>
+                        <th class="px-6 py-3">Cliente</th>
+                        <th class="px-6 py-3">Encuestador</th>
+                        <th class="px-6 py-3 text-center">Estado</th>
+                    </tr>
+                </thead>
+                
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

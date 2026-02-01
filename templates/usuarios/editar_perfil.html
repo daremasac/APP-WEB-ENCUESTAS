@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Mi Perfil</h2>
+            <p class="text-gray-500 text-sm">Actualiza tu información personal.</p>
+        </div>
+        <a href="{% url 'dashboard' %}"
+            class="text-brand-600 hover:text-brand-800 font-medium text-sm flex items-center">
+            ← Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <form method="POST" id="formPerfil">
+            {% csrf_token %}
+
+            <div class="grid gap-6 mb-6 md:grid-cols-2">
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Nombres</label>
+                    {{ form.nombres }}
+                    {% if form.nombres.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.nombres.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Apellidos</label>
+                    {{ form.apellidos }}
+                    {% if form.apellidos.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.apellidos.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">DNI</label>
+                    {{ form.dni }}
+                    {% if form.dni.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.dni.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Sexo</label>
+                    {{ form.sexo }}
+                    {% if form.sexo.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.sexo.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Fecha de Nacimiento</label>
+                    {{ form.fecha_nacimiento }}
+                    {% if form.fecha_nacimiento.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.fecha_nacimiento.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono / Celular</label>
+                    {{ form.telefono }}
+                    {% if form.telefono.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.telefono.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block mb-2 text-sm font-medium text-gray-900">Dirección de Domicilio</label>
+                {{ form.direccion }}
+                {% if form.direccion.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ form.direccion.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-4 border-t border-gray-100 pt-4 mt-4">
+                <button type="button" onclick="confirmarGuardado()"
+                    class="text-white bg-brand-600 hover:bg-brand-700 focus:ring-4 focus:outline-none focus:ring-brand-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+                    Guardar Cambios
+                </button>
+                <a href="{% url 'dashboard' %}"
+                    class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+    function confirmarGuardado() {
+        const formulario = document.getElementById('formPerfil');
+
+        // 1. Validamos HTML5
+        if (!formulario.checkValidity()) {
+            formulario.reportValidity();
+            return;
+        }
+
+        // 2. Alerta de Pregunta
+        Swal.fire({
+            title: '¿Guardar los cambios?',
+            text: "Se actualizará tu información personal.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3',
+                cancelButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                // --- NUEVO: ESTADO DE CARGA SUAVE ---
+                Swal.fire({
+                    title: 'Guardando...',
+                    text: 'Por favor espere un momento.',
+                    allowOutsideClick: false, // Evita que den clic fuera
+                    allowEscapeKey: false,
+                    showConfirmButton: false, // Ocultamos botones
+                    didOpen: () => {
+                        Swal.showLoading(); // Activa el spinner giratorio
+                    }
+                });
+
+                // Damos una pequeña pausa (800ms) para que el usuario vea 
+                // que "algo está pasando" antes de recargar la página.
+                setTimeout(() => {
+                    formulario.submit();
+                }, 700);
+            }
+        })
+    }
+</script>
+{% endblock %}
