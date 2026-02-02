@@ -20,6 +20,12 @@ from apps.usuarios.views import home
 # Configuración para ver imágenes en desarrollo
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import handler404,handler403
+
+
+# Apunta a las funciones que crearemos en el siguiente paso
+handler404 = 'apps.usuarios.views.error_404_view'
+handler403 = 'apps.usuarios.views.error_403_view'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +36,8 @@ urlpatterns = [
     path('usuarios/', include('apps.usuarios.urls')),
     path('fichas/', include('apps.fichas.urls')),
     path('ubigeo/', include('apps.ubigeo.urls')),
+
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_list_or_404
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+
 # --- IMPORTACIONES FALTANTES ---
-from django.contrib.auth.decorators import login_required 
-from django.contrib import messages 
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 # -------------------------------
 from .forms import LoginForm, PerfilForm, UsuarioAdminForm, EncuestadorForm
-from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from .models import Usuario
@@ -16,21 +18,34 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from apps.fichas.models import FichaEvaluacion
 from datetime import timedelta
+# ... (tus otras vistas) ...
 
-# apps/usuarios/views.py
+from django.db.models import Count, Sum, Avg, Q
+from django.db.models.functions import TruncDate
+from apps.usuarios.models import Usuario
+import json
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
+from django.http import HttpResponse
+from django.shortcuts import redirect
+
 
 @login_required
 def home(request):
+    """Punto de entrada único que deriva según el rol."""
     user = request.user
+    
     if user.rol == 'ENCUESTADOR':
         return redirect('mis_encuestas')
     
     elif user.rol == 'SUPERVISOR':
         return redirect('listar_mi_equipo')
-        
-    else:
-        # Admin
-        return redirect('dashboard_admin')
+    
+    elif user.rol == 'ADMIN':
+        return redirect('lista_usuarios') # O 'lista_usuarios' según prefieras
+    
+    # Si por alguna razón no tiene rol, lo mandamos al login o una página neutral
+    return redirect('login')
 
 class CustomLoginView(LoginView):
     template_name = 'usuarios/login.html'
@@ -45,37 +60,15 @@ def es_admin(user):
 def es_supervisor(user):
     return user.is_authenticated and user.rol == 'SUPERVISOR'
 
-# ... (tus otras vistas) ...
+
+
+def es_admin(user):
+    return user.is_authenticated and user.rol == 'ADMIN'
+
 
 @user_passes_test(es_admin)
 def dashboard_admin(request):
-    total_encuestadores = Usuario.objects.filter(rol='ENCUESTADOR', is_active=True).count()
-    total_supervisores = Usuario.objects.filter(rol='SUPERVISOR', is_active=True).count()
-    total_fichas = "100"
-    
-    # Producción de HOY (Vital para el admin)
-    hoy = timezone.now().date()
-    # fichas_hoy = Ficha.objects.filter(fecha_registro__date=hoy).count()
-    fichas_hoy = 12
-    
-    # Producción pendiente de revisión
-    # pendientes = Ficha.objects.filter(estado='ENVIADO').count()
-    pendientes = 3
-
-    # --- LISTADOS RECIENTES ---
-    # Las 5 fichas más recientes para ver qué está entrando en tiempo real
-    # ultimas_fichas = Ficha.objects.select_related('encuestador').order_by('-fecha_registro')[:5]
-    ultimas_fichas = 4
-
-    context = {
-        'kpi_encuestadores': total_encuestadores,
-        'kpi_supervisores': total_supervisores,
-        'kpi_total_fichas': total_fichas,
-        'kpi_hoy': fichas_hoy,
-        'kpi_pendientes': pendientes,
-        'ultimas_fichas': ultimas_fichas
-    }
-    return render(request, 'usuarios/dashboard.html', context)
+    return render(request, 'usuarios/dashboard.html')
 
 @login_required
 def editar_perfil(request):
@@ -154,6 +147,8 @@ def lista_usuarios(request):
 
     return render(request, 'usuarios/lista_usuarios.html', context)
 # 2. CREAR Y EDITAR (Vista Híbrida)
+@user_passes_test(es_admin)
+
 @user_passes_test(es_admin)
 def gestionar_usuario(request, pk=None):
     if pk:
@@ -430,13 +425,7 @@ def eliminar_encuestador_equipo(request, pk):
     return redirect('listar_mi_equipo')
 
 
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
-from django.http import HttpResponse
-from django.utils import timezone
-from datetime import timedelta
-from django.contrib.auth.decorators import login_required
-# IMPORTA TUS MODELOS AQUÍ (Ajusta la ruta según tu proyecto)
+
 
 
 @login_required
@@ -547,3 +536,18 @@ def exportar_excel_supervisor(request):
     
     wb.save(response)
     return response
+
+# Redireccionamiento 
+
+
+def error_404_view(request, exception):
+    """Si la URL no existe, lo mandamos al home dinámico."""
+    if request.user.is_authenticated:
+        return redirect('home') # Usa el 'name' definido en tu urls.py
+    return redirect('login')
+
+def error_403_view(request, exception=None):
+    """Si no tiene permiso para una URL existente, lo regresamos a su dashboard."""
+    if request.user.is_authenticated:
+        return redirect('home')
+    return redirect('login')

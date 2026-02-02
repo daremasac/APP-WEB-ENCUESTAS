@@ -11,22 +11,25 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
+from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2e%5ro7bpr090pf_o26q$zfrbw2q9_*_35&ctn+3i&a2g_!+sx'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definition
 
@@ -119,6 +122,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -135,3 +143,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'darema.tech@gmail.com' # Tu correo de Gmail
 EMAIL_HOST_PASSWORD = 'lwkh udbz plfw nmwa'  # Tu contraseña de aplicación de Gmail
 DEFAULT_FROM_EMAIL = '"Soporte DaremaTechnology S.A.C." <darema.tech@gmail.com>'
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

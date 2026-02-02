@@ -73,8 +73,16 @@
                 {{ dim.nombre }}
             </button>
             {% endfor %}
+            <!-- Agregado -->
+            <button type="button" id="tab-btn-resultados"
+                class="tab-btn snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all duration-200 flex-shrink-0"
+                data-index="ultimo">
+                Resultados y Validación
+            </button>
+            <!-- end agreagdo -->
         </div>
     </div>
+
 
     <form method="POST" id="form-riesgo" class="relative">
         {% csrf_token %}
@@ -185,7 +193,7 @@
                                 (Actual)</label>
                             <select name="ubigeo_provincia" id="cbo_prov_actual"
                                 class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none"
-                                onchange="cargarDistritos('actual')" disabled>
+                                onchange="cargarDistritos('actual')" required disabled>
                                 <option value="">-- Primero Dpto --</option>
                             </select>
                         </div>
@@ -195,7 +203,7 @@
                                 (Actual)</label>
                             <select name="ubigeo_distrito" id="cbo_dist_actual"
                                 class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none"
-                                disabled>
+                               required disabled>
                                 <option value="">-- Primero Prov --</option>
                             </select>
                         </div>
@@ -230,20 +238,23 @@
                             emergencia contactar a:</label>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="md:col-span-2">
-                                <label class="text-[12px] md:text-sm font-semibold text-gray-500  uppercase">Nombre Completo</label>
+                                <label class="text-[12px] md:text-sm font-semibold text-gray-500  uppercase">Nombre
+                                    Completo</label>
                                 <input type="text" name="emergencia_contacto"
                                     class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                                     required>
                             </div>
                             <div>
-                                <label class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Teléfono</label>
+                                <label
+                                    class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Teléfono</label>
                                 <input type="text" name="emergencia_telefono"
                                     class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                                     required>
                             </div>
                             <div>
-                                
-                                <label class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Parentesco</label>
+
+                                <label
+                                    class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Parentesco</label>
                                 <select name="emergencia_parentesco" required
                                     class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3  py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none">
                                     <option value="">Seleccione parentesco...</option>
@@ -296,9 +307,10 @@
                             placeholder="Nombre del jefe/a" required>
                     </div>
                     <div>
-                        <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Número total de integrantes</label>
+                        <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Número total de
+                            integrantes</label>
                         <input type="number" name="num_integrantes" id="input_num_integrantes" min="0"
-                            class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
+                            class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 "
                             placeholder="Ej: 3" required onfocus="this.dataset.valorPrevio = this.value"
                             oninput="controlarLimiteFamilia(this)">
                     </div>
@@ -377,7 +389,7 @@
                                         class="block w-full appearance-none rounded-lg border border-gray-300 bg-gray-50 py-3 px-4 pr-10 leading-tight text-gray-700 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors cursor-pointer">
                                         <option value="">Seleccione una opción...</option>
                                         {% for opcion in pregunta.opciones.all %}
-                                        <option value="{{ opcion.id }}">
+                                        <option value="{{ opcion.id }}" data-pts="{{ opcion.puntaje }}">
                                             {{ opcion.texto }}
                                         </option>
                                         {% endfor %}
@@ -398,8 +410,98 @@
                 </div>
             </div>
             {% endfor %}
+            <!-- agregado -->
+            <div class="tab-pane fade-in p-6 md:p-8 hidden" data-step="ultimo" id="panel-resultados">
+                <div class="mb-8 border-l-4 border-green-500 pl-4">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Cálculo de Puntuación y Resultado de Riesgo
+                        Social</h2>
+                    <p class="text-sm text-gray-500">Revise el desglose técnico antes de finalizar el registro.</p>
+                </div>
 
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                    <div class="lg:col-span-2">
+                        <h3 class="text-sm font-bold text-blue-600 uppercase mb-4 tracking-wider">Puntuación por
+                            Dimensión</h3>
+                        <div class="table-container border border-gray-200">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-600 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold">Dimensión</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Puntuación Obtenida</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Máximo Teórico</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-puntuaciones-body" class="divide-y divide-gray-100">
+                                </tbody>
+                                <tfoot class="bg-gray-50 font-bold text-gray-900 border-t-2 border-gray-200">
+                                    <tr>
+                                        <td class="px-4 py-3 text-right uppercase text-xs">Puntuación Total de Riesgo
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-lg" id="res-puntaje-final-tabla">0</td>
+                                        <td class="px-4 py-3 text-center text-gray-400">125 (Máx.)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <h3 class="text-sm font-bold text-blue-600 uppercase mb-4 tracking-wider">Nivel de Riesgo
+                            General</h3>
+                        <div
+                            class="bg-white border-2 border-gray-100 rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center flex-grow text-center">
+                            <p class="text-xs text-gray-400 uppercase font-bold tracking-widest mb-2">Puntuación Final
+                            </p>
+                            <div class="text-6xl font-black text-gray-800 mb-6" id="res-puntaje-big">0</div>
+                            <div id="res-badge-grande"
+                                class="w-full py-4 rounded-2xl text-xl font-black shadow-md transition-all duration-500">
+                                --
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <h3 class="text-sm font-bold text-blue-600 uppercase mb-4 tracking-wider">Interpretación por
+                        Dimensión</h3>
+                    <div id="grid-interpretacion" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-gray-200 pt-8">
+                    <h3 class="text-sm font-bold text-gray-700 uppercase mb-4 tracking-wider text-center">Escala de
+                        Semaforización</h3>
+                    <div class="grid grid-cols-1 gap-2 overflow-hidden rounded-xl border border-gray-100">
+                        <div class="grid grid-cols-12 bg-red-600 text-white p-3 items-center">
+                            <div class="col-span-3 font-bold text-xs uppercase">Riesgo Crítico</div>
+                            <div class="col-span-2 text-center text-xs font-bold">126 o más</div>
+                            <div class="col-span-7 text-[11px] leading-tight pl-4">Activación inmediata del Protocolo de
+                                Emergencia.</div>
+                        </div>
+                        <div class="grid grid-cols-12 bg-orange-500 text-white p-3 items-center">
+                            <div class="col-span-3 font-bold text-xs uppercase">Riesgo Severo</div>
+                            <div class="col-span-2 text-center text-xs font-bold">76 - 125</div>
+                            <div class="col-span-7 text-[11px] leading-tight pl-4">Derivación a servicios especializados
+                                con seguimiento intensivo.</div>
+                        </div>
+                        <div class="grid grid-cols-12 bg-yellow-400 text-gray-900 p-3 items-center">
+                            <div class="col-span-3 font-bold text-xs uppercase">Riesgo Moderado</div>
+                            <div class="col-span-2 text-center text-xs font-bold">26 - 75</div>
+                            <div class="col-span-7 text-[11px] leading-tight pl-4">Consejería y apoyo socioemocional,
+                                Plan de mejora de factores de riesgo.</div>
+                        </div>
+                        <div class="grid grid-cols-12 bg-green-500 text-white p-3 items-center">
+                            <div class="col-span-3 font-bold text-xs uppercase">Riesgo Bajo</div>
+                            <div class="col-span-2 text-center text-xs font-bold">0 - 25</div>
+                            <div class="col-span-7 text-[11px] leading-tight pl-4">Monitoreo preventivo, Fortalecimiento
+                                de factores protectores.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end agreagdo -->
         </div>
+
 
         <div
             class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40">
@@ -435,569 +537,743 @@
         </div>
 
     </form>
-
-
     <script>
-        // UBICACIÓN: Dentro de <script>, antes de document.addEventListener...
+        // ============================================================================
+        // FORMULARIO DE EVALUACIÓN DE RIESGO SOCIAL - JAVASCRIPT CORREGIDO
+        // ============================================================================
 
+        // --- VARIABLES GLOBALES ---
+        let currentStep = 0;
+        let formularioSucio = false;
+
+        // --- PROTECCIÓN CONTRA SALIDA ACCIDENTAL ---
         function confirmarSalida() {
-            // URL a la que quieres volver (Dashboard o Mis Encuestas)
-            const urlDestino = "{% url 'mis_encuestas' %}";
+            const urlDestino = document.querySelector('[data-url-salida]')?.dataset.urlSalida || '/';
 
-            if (typeof formularioSucio !== 'undefined' && formularioSucio) {
-                // Si hay datos modificados, preguntamos
-                const confirmar = confirm("⚠️ ATENCIÓN: Hay datos sin guardar.\n\nSi sale ahora, perderá el progreso de esta ficha.\n\n¿Está seguro que desea salir?");
-
+            if (formularioSucio) {
+                const confirmar = confirm(
+                    "⚠️ ATENCIÓN: Hay datos sin guardar.\n\n" +
+                    "Si sale ahora, perderá el progreso de esta ficha.\n\n" +
+                    "¿Está seguro que desea salir?"
+                );
                 if (confirmar) {
-                    // Importante: Desactivamos la bandera para que el navegador no bloquee la redirección
                     formularioSucio = false;
                     window.location.href = urlDestino;
                 }
             } else {
-                // Si no hay cambios, salimos directamente
                 window.location.href = urlDestino;
             }
         }
-        document.addEventListener("DOMContentLoaded", function () {
 
-            // ======================================================
-            // 1. CONFIGURACIÓN INICIAL
-            // ======================================================
-            let currentStep = 0;
+        // Protección antes de cerrar/recargar página
+        window.addEventListener('beforeunload', function (e) {
+            if (formularioSucio) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        // ============================================================================
+        // INICIALIZACIÓN DEL FORMULARIO
+        // ============================================================================
+        document.addEventListener("DOMContentLoaded", function () {
+            // Elementos del DOM
             const steps = document.querySelectorAll(".tab-pane");
             const tabButtons = document.querySelectorAll(".tab-btn");
             const btnNext = document.getElementById("btn-next");
             const btnPrev = document.getElementById("btn-prev");
             const btnSubmit = document.getElementById("btn-submit");
+            const form = document.getElementById('form-riesgo');
             const totalSteps = steps.length;
 
-            // Inicializar tabla de familiares
-            if (document.getElementById('familiares-body')) {
-                agregarFilaFamiliar();
+            // Validar que existan los elementos necesarios
+            if (!steps.length || !form) {
+                console.error("Error: No se encontraron elementos requeridos del formulario");
+                return;
             }
 
-            // ======================================================
-            // 2. PROTECCIÓN CONTRA CIERRE ACCIDENTAL
-            // ======================================================
-            let formularioSucio = false;
-            const form = document.getElementById('form-riesgo');
-
-            form.addEventListener('change', () => { formularioSucio = true; });
-            form.addEventListener('input', () => { formularioSucio = true; });
-
-            window.addEventListener('beforeunload', function (e) {
-                if (formularioSucio) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                }
-            });
-
-            form.addEventListener('submit', () => { formularioSucio = false; });
-
-            // ======================================================
-            // 3. LÓGICA DE VALIDACIÓN (EL CORAZÓN DEL PROBLEMA)
-            // ======================================================
-
-            function mostrarError(input) {
-                // Borde rojo para inputs normales
-                input.classList.remove('border-gray-300');
-                input.classList.add('border-red-500', 'ring-2', 'ring-red-100');
-
-                // Para Radio Buttons, buscamos su contenedor padre para pintarlo
-                if (input.type === 'radio') {
-                    const parent = input.closest('.radio-group') || input.parentElement;
-                    parent.classList.add('border', 'border-red-500', 'rounded-lg', 'p-1', 'bg-red-50');
-                }
+            // Actualizar contador de pasos
+            const totalStepsDisplay = document.getElementById("total-steps-display");
+            if (totalStepsDisplay) {
+                totalStepsDisplay.innerText = totalSteps;
             }
 
-            function limpiarError(input) {
-                input.classList.remove('border-red-500', 'ring-2', 'ring-red-100');
-                input.classList.add('border-gray-300');
-
-                if (input.type === 'radio') {
-                    const parent = input.closest('.radio-group') || input.parentElement;
-                    parent.classList.remove('border', 'border-red-500', 'rounded-lg', 'p-1', 'bg-red-50');
+            // ========================================================================
+            // FUNCIÓN: MOSTRAR PASO
+            // ========================================================================
+            function showStep(index) {
+                // Validar índice
+                if (index < 0 || index >= totalSteps) {
+                    console.warn(`Índice de paso inválido: ${index}`);
+                    return;
                 }
+
+                // Si es el paso de resultados, actualizar cálculos
+                const currentPane = steps[index];
+                if (currentPane && currentPane.id === "panel-resultados") {
+                    actualizarResumenResultados();
+                }
+
+                // Ocultar todos los pasos y mostrar el actual
+                steps.forEach((pane, idx) => {
+                    if (pane) {
+                        pane.classList.toggle("hidden", idx !== index);
+                        pane.classList.toggle("block", idx === index);
+                    }
+                });
+
+                // Actualizar estado de los botones de tabs
+                tabButtons.forEach((btn, idx) => {
+                    if (btn) {
+                        const isActive = (idx === index);
+                        btn.classList.toggle("bg-blue-600", isActive);
+                        btn.classList.toggle("text-white", isActive);
+                        btn.classList.toggle("shadow-md", isActive);
+                        btn.classList.toggle("bg-white", !isActive);
+                        btn.classList.toggle("text-gray-600", !isActive);
+
+                        // Scroll al tab activo (solo en desktop)
+                        if (isActive && window.innerWidth >= 1024) {
+                            btn.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest',
+                                inline: 'center'
+                            });
+                        }
+                    }
+                });
+
+                // Actualizar paso actual
+                currentStep = index;
+
+                // Visibilidad de botones de navegación
+                if (btnPrev) btnPrev.classList.toggle("hidden", currentStep === 0);
+
+                if (currentStep === totalSteps - 1) {
+                    if (btnNext) btnNext.classList.add("hidden");
+                    if (btnSubmit) btnSubmit.classList.remove("hidden");
+                } else {
+                    if (btnNext) btnNext.classList.remove("hidden");
+                    if (btnSubmit) btnSubmit.classList.add("hidden");
+                }
+
+                // Actualizar indicador de paso
+                const currentStepDisplay = document.getElementById("current-step-display");
+                if (currentStepDisplay) {
+                    currentStepDisplay.innerText = currentStep + 1;
+                }
+
+                // Scroll suave al inicio
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
+            // ========================================================================
+            // FUNCIÓN: VALIDAR PASO ACTUAL
+            // ========================================================================
             function validarPasoActual() {
                 const currentPanel = steps[currentStep];
+                if (!currentPanel) return false;
+
                 let esValido = true;
                 let primerError = null;
 
-                // =================================================================
-                // 1. VALIDACIÓN ESPECIAL: COINCIDENCIA DE TABLA (SOLO EN PASO 1)
-                // =================================================================
-                if (currentStep === 1) { // 1 es el índice de "Estructura Familiar"
+                // --- VALIDACIÓN ESPECIAL: TABLA DE FAMILIARES (Paso 1) ---
+                if (currentStep === 1) {
                     const inputTotal = document.getElementById('input_num_integrantes');
-                    const tbody = document.getElementById('familiares-body');
+                    const totalEsperado = parseInt(inputTotal?.value) || 0;
+                    const famBody = document.getElementById('familiares-body');
+                    const filasReales = famBody ? famBody.querySelectorAll('tr').length : 0;
 
-                    // Asegurarnos que existan los elementos
-                    if (inputTotal && tbody) {
-                        const totalEsperado = parseInt(inputTotal.value) || 0;
-                        // Contamos solo las filas TR directas del body
-                        const filasReales = tbody.querySelectorAll('tr').length;
+                    if (totalEsperado <= 0) {
+                        alert("⚠️ Por favor, ingrese el número de integrantes (mínimo 1).");
+                        if (inputTotal) inputTotal.focus();
+                        return false;
+                    }
 
-                        // A. Validar que el número total sea mayor a 0
-                        if (totalEsperado <= 0) {
-                            alert("⚠️ Por favor, ingrese el número total de integrantes (mínimo 1).");
-                            inputTotal.focus();
-                            mostrarError(inputTotal);
-                            return false; // <--- BLOQUEA EL AVANCE AQUÍ
-                        }
+                    if (totalEsperado !== filasReales) {
+                        alert(
+                            `🛑 Error de Validación:\n\n` +
+                            `Ha indicado ${totalEsperado} integrante(s) pero la tabla tiene ${filasReales} fila(s).\n\n` +
+                            `Por favor, ajuste el número o complete/elimine filas.`
+                        );
+                        return false;
+                    }
 
-                        // B. Validar coincidencia exacta (Input vs Tabla)
-                        if (totalEsperado !== filasReales) {
-                            alert(`🛑 ERROR DE CANTIDAD:\n\nUd. indicó: ${totalEsperado} integrantes.\nEn la tabla hay: ${filasReales} filas.\n\nPor favor agregue o elimine integrantes hasta que coincidan.`);
+                    // Validar que todas las filas estén completas
+                    const filas = famBody.querySelectorAll('tr');
+                    for (let i = 0; i < filas.length; i++) {
+                        const fila = filas[i];
+                        const inputs = fila.querySelectorAll('input[required], select[required]');
 
-                            // Resaltar visualmente el botón de agregar
-                            const btnAdd = document.getElementById('btn-add-familiar');
-                            if (btnAdd) {
-                                btnAdd.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                btnAdd.classList.add('ring-4', 'ring-red-400', 'bg-red-50');
-                                setTimeout(() => btnAdd.classList.remove('ring-4', 'ring-red-400', 'bg-red-50'), 2000);
+                        for (let input of inputs) {
+                            if (!input.value || input.value.trim() === '') {
+                                alert(`⚠️ Por favor, complete todos los campos del integrante #${i + 1}`);
+                                input.focus();
+                                input.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+                                setTimeout(() => {
+                                    input.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+                                }, 2000);
+                                return false;
                             }
-                            return false; // <--- BLOQUEA EL AVANCE AQUÍ
                         }
                     }
                 }
 
-                // =================================================================
-                // 2. VALIDACIÓN ESTÁNDAR DE CAMPOS VACÍOS (TU LÓGICA ACTUAL)
-                // =================================================================
-
-                // A. INPUTS VISIBLES
-                const inputs = currentPanel.querySelectorAll("input:not([type='radio']):not([type='hidden']), select, textarea");
+                // --- VALIDACIÓN GENERAL: CAMPOS REQUERIDOS ---
+                const inputs = currentPanel.querySelectorAll("input[required], select[required], textarea[required]");
 
                 inputs.forEach(input => {
-                    // Verificar si es visible y requerido
-                    if (input.offsetParent !== null && input.hasAttribute('required')) {
-                        if (!input.value.trim()) {
+                    // Solo validar elementos visibles
+                    if (input.offsetParent !== null) {
+                        let valorValido = false;
+
+                        if (input.type === 'radio') {
+                            // Validar grupo de radios
+                            const grupoRadios = document.getElementsByName(input.name);
+                            valorValido = Array.from(grupoRadios).some(r => r.checked);
+                        } else if (input.type === 'checkbox') {
+                            valorValido = input.checked;
+                        } else {
+                            valorValido = input.value && input.value.trim() !== '';
+                        }
+
+                        if (!valorValido) {
                             esValido = false;
-                            mostrarError(input);
+                            input.classList.add('border-red-500', 'ring-2', 'ring-red-100');
                             if (!primerError) primerError = input;
                         } else {
-                            limpiarError(input);
+                            input.classList.remove('border-red-500', 'ring-2', 'ring-red-100');
                         }
                     }
                 });
 
-                // B. RADIO BUTTONS
-                const radioNames = new Set();
-                currentPanel.querySelectorAll("input[type='radio'][required]").forEach(r => {
-                    if (r.offsetParent !== null) radioNames.add(r.name);
-                });
-
-                radioNames.forEach(name => {
-                    const radios = currentPanel.querySelectorAll(`input[name="${name}"]`);
-                    const algunoMarcado = Array.from(radios).some(r => r.checked);
-
-                    if (!algunoMarcado) {
-                        esValido = false;
-                        radios.forEach(r => mostrarError(r));
-                        if (!primerError) primerError = radios[0];
-                    } else {
-                        radios.forEach(r => limpiarError(r));
-                    }
-                });
-
-                // ACCIÓN FINAL: SCROLL AL ERROR
-                if (primerError) {
+                // Mostrar mensaje y hacer focus al primer error
+                if (!esValido && primerError) {
+                    alert("⚠️ Por favor, complete todos los campos obligatorios antes de continuar.");
+                    primerError.focus();
                     primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    if (primerError.type !== 'radio') primerError.focus({ preventScroll: true });
-
-                    primerError.classList.add('animate-pulse');
-                    setTimeout(() => primerError.classList.remove('animate-pulse'), 500);
                 }
 
                 return esValido;
             }
-            // ======================================================
-            // 4. NAVEGACIÓN (TABS)
-            // ======================================================
-            function updateButtons() {
-                if (currentStep === 0) btnPrev.classList.add("hidden");
-                else btnPrev.classList.remove("hidden");
 
-                if (currentStep === totalSteps - 1) {
-                    btnNext.classList.add("hidden");
-                    btnSubmit.classList.remove("hidden");
-                } else {
-                    btnNext.classList.remove("hidden");
-                    btnSubmit.classList.add("hidden");
+            // ========================================================================
+            // FUNCIÓN: ACTUALIZAR RESUMEN DE RESULTADOS
+            // ========================================================================
+            function actualizarResumenResultados() {
+                let puntajeTotalGlobal = 0;
+                const tablaBody = document.getElementById('tabla-puntuaciones-body');
+                const gridInterpretacion = document.getElementById('grid-interpretacion');
+
+                if (tablaBody) tablaBody.innerHTML = '';
+                if (gridInterpretacion) gridInterpretacion.innerHTML = '';
+
+                steps.forEach((pane, idx) => {
+                    const stepId = pane.getAttribute('data-step');
+
+                    // Omitir pasos que no son dimensiones (Datos Generales, Familia, Resultados)
+                    if (["0", "1", "ultimo"].includes(stepId)) return;
+
+                    const tituloDim = pane.querySelector('h2')?.innerText.trim() || `Dimensión ${idx}`;
+                    let subtotalObtenido = 0;
+                    let maximoTeoricoDimension = 0;
+
+                    // Obtener todas las preguntas (selects) de esta dimensión
+                    const preguntasSelect = pane.querySelectorAll('select[name^="pregunta_"]');
+
+                    preguntasSelect.forEach(sel => {
+                        // 1. Sumar puntaje de la opción seleccionada por el usuario
+                        if (sel.selectedIndex > 0) {
+                            subtotalObtenido += parseInt(sel.options[sel.selectedIndex].getAttribute('data-pts')) || 0;
+                        }
+
+                        // 2. CALCULAR MÁXIMO TEÓRICO: Solo el valor más alto entre las opciones de esta pregunta
+                        let puntajeMasAltoPregunta = 0;
+                        Array.from(sel.options).forEach(opt => {
+                            const pts = parseInt(opt.getAttribute('data-pts')) || 0;
+                            if (pts > puntajeMasAltoPregunta) {
+                                puntajeMasAltoPregunta = pts;
+                            }
+                        });
+                        // Sumamos el tope de la pregunta al total de la dimensión
+                        maximoTeoricoDimension += puntajeMasAltoPregunta;
+                    });
+
+                    puntajeTotalGlobal += subtotalObtenido;
+
+                    // 3. Generar Fila de Tabla (Clicable para editar)
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 group";
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 text-gray-700 font-medium group-hover:text-blue-600">${tituloDim}</td>
+                        <td class="px-4 py-3 text-center font-bold text-blue-600">${subtotalObtenido}</td>
+                        <td class="px-4 py-3 text-center text-gray-400 font-semibold">${maximoTeoricoDimension}</td>
+                    `;
+                    tr.onclick = () => showStep(idx);
+                    if (tablaBody) tablaBody.appendChild(tr);
+
+                    // 4. Generar Cuadro de Interpretación (Clicable para editar)
+                    const card = document.createElement('div');
+                    card.className = "p-4 rounded-xl bg-white border border-gray-200 cursor-pointer hover:border-blue-400 hover:shadow-md transition-all";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">${tituloDim}</p>
+                            <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">Editar</span>
+                        </div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-xl font-black text-blue-700">${subtotalObtenido}</span>
+                            <span class="text-xs text-gray-400">/ ${maximoTeoricoDimension} máx.</span>
+                        </div>
+                    `;
+                    card.onclick = () => showStep(idx);
+                    if (gridInterpretacion) gridInterpretacion.appendChild(card);
+                });
+
+                // Actualizar los indicadores de puntaje y el semáforo visual
+                actualizarIndicadoresFinales(puntajeTotalGlobal);
+            }
+            function actualizarIndicadoresFinales(total) {
+                const resPuntajeTabla = document.getElementById('res-puntaje-final-tabla');
+                const resPuntajeBig = document.getElementById('res-puntaje-big');
+                const badge = document.getElementById('res-badge-grande');
+
+                if (resPuntajeTabla) resPuntajeTabla.innerText = total;
+                if (resPuntajeBig) resPuntajeBig.innerText = total;
+
+                if (badge) {
+                    let config = { texto: "RIESGO BAJO", clases: "bg-green-500 text-white" };
+                    if (total >= 126) config = { texto: "RIESGO CRÍTICO", clases: "bg-red-600 text-white" };
+                    else if (total >= 76) config = { texto: "RIESGO SEVERO", clases: "bg-orange-500 text-white" };
+                    else if (total >= 26) config = { texto: "RIESGO MODERADO", clases: "bg-yellow-400 text-gray-800" };
+
+                    badge.innerText = config.texto;
+                    badge.className = `w-full py-4 rounded-2xl text-xl font-black shadow-lg transition-all duration-500 flex items-center justify-center ${config.clases}`;
                 }
-
-                // Actualizar textos de pasos
-                const display = document.getElementById("current-step-display");
-                if (display) display.innerText = currentStep + 1;
             }
+            // ========================================================================
+            // EVENTOS DE NAVEGACIÓN
+            // ========================================================================
 
-            function showStep(index) {
-                steps.forEach((step, idx) => {
-                    if (idx === index) {
-                        step.classList.remove("hidden");
-                        step.classList.add("block");
-                    } else {
-                        step.classList.add("hidden");
-                        step.classList.remove("block");
-                    }
-                });
-
-                tabButtons.forEach((btn, idx) => {
-                    if (idx === index) {
-                        btn.classList.add("bg-blue-600", "text-white", "shadow-md");
-                        btn.classList.remove("bg-white", "text-gray-600", "border");
-                        // Auto-scroll del menú superior en móvil
-                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    } else {
-                        btn.classList.remove("bg-blue-600", "text-white", "shadow-md");
-                        btn.classList.add("bg-white", "text-gray-600", "border");
-                    }
-                });
-
-                currentStep = index;
-                updateButtons();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            // EVENTO: BOTÓN SIGUIENTE
-            btnNext.addEventListener("click", function () {
-                if (validarPasoActual()) {
-                    if (currentStep < totalSteps - 1) {
+            // Botón "Siguiente"
+            if (btnNext) {
+                btnNext.addEventListener("click", () => {
+                    if (validarPasoActual()) {
                         showStep(currentStep + 1);
                     }
-                } else {
-                    console.log("Faltan campos obligatorios");
-                }
-            });
+                });
+            }
 
-            // EVENTO: BOTÓN ANTERIOR
-            btnPrev.addEventListener("click", function () {
-                if (currentStep > 0) showStep(currentStep - 1);
-            });
+            // Botón "Anterior"
+            if (btnPrev) {
+                btnPrev.addEventListener("click", () => {
+                    if (currentStep > 0) {
+                        showStep(currentStep - 1);
+                    }
+                });
+            }
 
-            // EVENTO: TABS SUPERIORES (Clickeables)
+            // Tabs de navegación
             tabButtons.forEach((btn, idx) => {
                 btn.addEventListener("click", function () {
-
-                    // CASO 1: El usuario quiere retroceder (idx < currentStep)
-                    // Lo permitimos siempre para que pueda corregir
+                    // Permitir retroceso sin validación
                     if (idx < currentStep) {
                         showStep(idx);
                         return;
                     }
 
-                    // CASO 2: El usuario quiere avanzar (idx > currentStep)
+                    // Para avanzar, validar
                     if (idx > currentStep) {
-
-                        // A. Evitar saltos grandes (Ej: del paso 1 al 3 sin pasar por el 2)
+                        // Evitar saltos grandes
                         if (idx > currentStep + 1) {
                             alert("🚫 Por favor, avance en orden secuencial completando cada sección.");
                             return;
                         }
 
-                        // B. Validar el paso actual antes de permitir el cambio
+                        // Validar antes de avanzar
                         if (validarPasoActual()) {
                             showStep(idx);
-                        } else {
-                            // Si falla, validarPasoActual ya muestra los errores y hace focus
-                            console.log("Bloqueo por validación incompleta");
                         }
                     }
                 });
             });
 
-            // Limpiar errores en tiempo real mientras el usuario escribe
-            form.addEventListener('input', function (e) {
-                if (e.target.classList.contains('border-red-500') || e.target.type === 'radio') {
-                    limpiarError(e.target);
-                }
-            });
+            // ========================================================================
+            // DETECTAR CAMBIOS PARA PROTECCIÓN DE SALIDA
+            // ========================================================================
+            if (form) {
+                form.addEventListener('change', () => {
+                    formularioSucio = true;
+                });
 
-            // Iniciar
+                form.addEventListener('input', () => {
+                    formularioSucio = true;
+                });
+
+                form.addEventListener('submit', (e) => {
+                    // 1. Validamos que el último paso (Resultados) sea correcto
+                    if (!validarPasoActual()) {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // 2. Alerta de confirmación final
+                    const mensaje = "¿Está seguro de que desea finalizar la evaluación?\n\n" +
+                        "Una vez guardado, los datos serán registrados en el sistema.";
+
+                    if (!confirm(mensaje)) {
+                        e.preventDefault(); // Si el usuario cancela, no se envía
+                        return false;
+                    }
+
+                    // 3. Feedback visual (Opcional pero recomendado)
+                    const btnSubmit = document.getElementById("btn-submit");
+                    if (btnSubmit) {
+                        btnSubmit.disabled = true;
+                        btnSubmit.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mr-3 inline text-white" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Guardando...
+                `;
+                    }
+
+                    // 4. Liberamos la protección de salida accidental
+                    formularioSucio = false;
+                    return true;
+                });
+            }
+
+            // ========================================================================
+            // INICIALIZAR PRIMER PASO
+            // ========================================================================
             showStep(0);
+
+            // console.log("✅ Formulario de Evaluación de Riesgo inicializado correctamente");
         });
 
-        // ======================================================
-        // 5. FUNCIONES DE NEGOCIO (Ubigeo, Familia, Toggle)
-        // ======================================================
+        // ============================================================================
+        // FUNCIONES DE UBIGEO (CASCADA DEPARTAMENTO > PROVINCIA > DISTRITO)
+        // ============================================================================
 
-        // --- UBIGEO ---
         function cargarProvincias(tipo) {
-            const depId = document.getElementById(`cbo_dep_${tipo}`).value;
-            const cboProv = document.getElementById(`cbo_prov_${tipo}`);
-            const cboDist = document.getElementById(`cbo_dist_${tipo}`);
+            const depSelect = document.getElementById(`cbo_dep_${tipo}`);
+            const provSelect = document.getElementById(`cbo_prov_${tipo}`);
+            const distSelect = document.getElementById(`cbo_dist_${tipo}`);
 
-            cboProv.innerHTML = '<option value="">Cargando...</option>'; cboProv.disabled = true;
-            if (cboDist) { cboDist.innerHTML = '<option value="">--</option>'; cboDist.disabled = true; cboProv.required = true; }
+            if (!depSelect || !provSelect) return;
 
-            if (depId) {
-                fetch(`/ubigeo/api/provincias/?dep_id=${depId}`)
-                    .then(r => r.json()).then(data => {
-                        let html = '<option value="">-- Seleccione --</option>';
-                        data.forEach(d => html += `<option value="${d.id}">${d.nombre}</option>`);
-                        cboProv.innerHTML = html; cboProv.disabled = false;
-                    });
-            } else {
-                cboProv.innerHTML = '<option value="">-- Seleccione Dpto --</option>';
+            const depId = depSelect.value;
+
+            // Resetear select de provincias
+            provSelect.innerHTML = '<option value="">Cargando...</option>';
+            provSelect.disabled = true;
+
+            // Resetear y deshabilitar distritos
+            if (distSelect) {
+                distSelect.innerHTML = '<option value="">-- Primero seleccione provincia --</option>';
+                distSelect.disabled = true;
             }
+
+            if (!depId) {
+                provSelect.innerHTML = '<option value="">-- Primero seleccione departamento --</option>';
+                return;
+            }
+
+            // Realizar petición AJAX
+            fetch(`/ubigeo/api/provincias/?dep_id=${depId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la petición');
+                    return response.json();
+                })
+                .then(data => {
+                    let html = '<option value="">-- Seleccione Provincia --</option>';
+                    data.forEach(provincia => {
+                        html += `<option value="${provincia.id}">${provincia.nombre}</option>`;
+                    });
+                    provSelect.innerHTML = html;
+                    provSelect.disabled = false;
+                })
+                .catch(error => {
+                    // console.error('Error al cargar provincias:', error);
+                    provSelect.innerHTML = '<option value="">Error al cargar datos</option>';
+                    alert('⚠️ Error al cargar las provincias. Por favor, recargue la página.');
+                });
         }
 
         function cargarDistritos(tipo) {
-            const provId = document.getElementById(`cbo_prov_${tipo}`).value;
-            const cboDist = document.getElementById(`cbo_dist_${tipo}`);
-            if (!cboDist) return;
+            const provSelect = document.getElementById(`cbo_prov_${tipo}`);
+            const distSelect = document.getElementById(`cbo_dist_${tipo}`);
 
-            cboDist.innerHTML = '<option value="">Cargando...</option>'; cboDist.disabled = true; cboDist.required = true;
-            if (provId) {
-                fetch(`/ubigeo/api/distritos/?prov_id=${provId}`)
-                    .then(r => r.json()).then(data => {
-                        let html = '<option value="">-- Seleccione --</option>';
-                        data.forEach(d => html += `<option value="${d.id}">${d.nombre}</option>`);
-                        cboDist.innerHTML = html; cboDist.disabled = false;
+            if (!provSelect || !distSelect) return;
+
+            const provId = provSelect.value;
+
+            // Resetear select de distritos
+            distSelect.innerHTML = '<option value="">Cargando...</option>';
+            distSelect.disabled = true;
+
+            if (!provId) {
+                distSelect.innerHTML = '<option value="">-- Primero seleccione provincia --</option>';
+                return;
+            }
+
+            // Realizar petición AJAX
+            fetch(`/ubigeo/api/distritos/?prov_id=${provId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la petición');
+                    return response.json();
+                })
+                .then(data => {
+                    let html = '<option value="">-- Seleccione Distrito --</option>';
+                    data.forEach(distrito => {
+                        html += `<option value="${distrito.id}">${distrito.nombre}</option>`;
                     });
-            } else {
-                cboDist.innerHTML = '<option value="">-- Seleccione Prov --</option>';
-            }
-        }
-
-
-        // ======================================================
-        // LOGICA DE FAMILIA (CON PROTECCIÓN DE BORRADO)
-        // ======================================================
-
-        // Inicializar contador global
-        let contadorFamiliares = 0;
-
-        // Función principal disparada por el input
-        function controlarLimiteFamilia(input) {
-            const nuevoLimite = parseInt(input.value) || 0;
-            const tablaContainer = document.getElementById('tabla-container-familia');
-            const btnAdd = document.getElementById('btn-add-familiar');
-            const tbody = document.getElementById('familiares-body');
-            const filas = tbody.querySelectorAll('tr');
-            const filasActuales = filas.length;
-
-            // 1. GESTIÓN DE REDUCCIÓN (El usuario bajó el número)
-            if (nuevoLimite < filasActuales) {
-                const filasSobrantes = Array.from(filas).slice(nuevoLimite); // Las filas que se irían
-
-                // Verificamos si alguna de las filas sobrantes tiene datos escritos
-                let hayDatos = filasSobrantes.some(fila => {
-                    const inputs = fila.querySelectorAll('input, select');
-                    return Array.from(inputs).some(i => i.value.trim() !== '' && i.type !== 'hidden');
+                    distSelect.innerHTML = html;
+                    distSelect.disabled = false;
+                })
+                .catch(error => {
+                    // console.error('Error al cargar distritos:', error);
+                    distSelect.innerHTML = '<option value="">Error al cargar datos</option>';
+                    alert('⚠️ Error al cargar los distritos. Por favor, recargue la página.');
                 });
-
-                if (hayDatos) {
-                    const confirmar = confirm(`⚠️ ATENCIÓN:\n\nAl reducir el número a ${nuevoLimite}, se eliminarán las últimas ${filasActuales - nuevoLimite} filas que contienen datos.\n\n¿Está seguro de continuar?`);
-
-                    if (!confirmar) {
-                        // Si cancela, restauramos el valor anterior del input y salimos
-                        input.value = input.dataset.valorPrevio || filasActuales;
-                        return;
-                    }
-                }
-
-                // Si no hay datos o confirmó, eliminamos las filas sobrantes
-                filasSobrantes.forEach(fila => fila.remove());
-                renumerarFilas(); // Reordenamos índices
-            }
-
-            // 2. ACTUALIZAR VISIBILIDAD Y BOTÓN
-            if (nuevoLimite > 0) {
-                tablaContainer.classList.remove('hidden');
-                btnAdd.classList.remove('hidden');
-            } else {
-                tablaContainer.classList.add('hidden');
-                btnAdd.classList.add('hidden');
-            }
-
-            // 3. ACTUALIZAR ESTADO DEL BOTÓN "AGREGAR"
-            verificarTope(nuevoLimite);
-
-            // 4. GUARDAR EL NUEVO VALOR COMO "PREVIO" (Para la próxima vez)
-            input.dataset.valorPrevio = nuevoLimite;
         }
 
-        // Función auxiliar para bloquear/desbloquear botón agregar
-        function verificarTope(limite) {
+        // ============================================================================
+        // FUNCIONES DE GESTIÓN DE TABLA FAMILIAR
+        // ============================================================================
+
+        function controlarLimiteFamilia(input) {
+            const limite = parseInt(input.value) || 0;
+            const container = document.getElementById('tabla-container-familia');
+            const btn = document.getElementById('btn-add-familiar');
             const tbody = document.getElementById('familiares-body');
-            const btnAdd = document.getElementById('btn-add-familiar');
-            // Contamos filas reales en el DOM
+
+            if (!tbody || !container || !btn) return;
+
             const filasActuales = tbody.querySelectorAll('tr').length;
 
-            if (filasActuales >= limite) {
-                btnAdd.disabled = true;
-                btnAdd.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100', 'text-gray-400');
-                btnAdd.classList.remove('hover:bg-blue-100', 'bg-blue-50', 'text-blue-600');
-                btnAdd.innerHTML = `<span class="font-normal">Límite completado (${limite}/${limite})</span>`;
-            } else {
-                btnAdd.disabled = false;
-                btnAdd.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-100', 'text-gray-400');
-                btnAdd.classList.add('hover:bg-blue-100', 'bg-blue-50', 'text-blue-600');
-                btnAdd.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                Agregar Integrante
-            `;
+            // Si se reduce el número y hay más filas de las permitidas
+            if (limite < filasActuales) {
+                const confirmar = confirm(
+                    `⚠️ ATENCIÓN:\n\n` +
+                    `Al reducir el número a ${limite}, se eliminarán los últimos ${filasActuales - limite} registro(s).\n\n` +
+                    `¿Desea continuar?`
+                );
+
+                if (!confirmar) {
+                    // Restaurar valor anterior
+                    input.value = input.dataset.valorPrevio || filasActuales;
+                    return;
+                }
+
+                // Eliminar filas excedentes
+                while (tbody.querySelectorAll('tr').length > limite) {
+                    const ultimaFila = tbody.lastElementChild;
+                    if (ultimaFila) ultimaFila.remove();
+                }
             }
+
+            // Mostrar/ocultar tabla y botón según el límite
+            container.classList.toggle('hidden', limite === 0);
+            btn.classList.toggle('hidden', limite === 0);
+            btn.disabled = (limite === 0);
+
+            // Guardar valor actual
+            input.dataset.valorPrevio = limite;
+
+            // Renumerar filas
+            renumerarFilas();
         }
 
         function agregarFilaFamiliar() {
             const inputNum = document.getElementById('input_num_integrantes');
-            const limite = parseInt(inputNum.value) || 0;
             const tbody = document.getElementById('familiares-body');
 
-            // Validación de seguridad (Límite)
-            if (tbody.querySelectorAll('tr').length >= limite) {
+            if (!inputNum || !tbody) return;
+
+            const limite = parseInt(inputNum.value) || 0;
+            const filasActuales = tbody.querySelectorAll('tr').length;
+
+            // Validación: no exceder el límite
+            if (filasActuales >= limite) {
                 inputNum.focus();
-                inputNum.classList.add('ring-4', 'ring-red-200');
-                setTimeout(() => inputNum.classList.remove('ring-4', 'ring-red-200'), 500);
+                inputNum.classList.add('ring-4', 'ring-red-300', 'border-red-500');
+
+                setTimeout(() => {
+                    inputNum.classList.remove('ring-4', 'ring-red-300', 'border-red-500');
+                }, 1000);
+
+                alert(`⚠️ Ya alcanzó el límite de ${limite} integrante(s).\n\nAumente el número total si desea agregar más.`);
                 return;
             }
 
+            // Crear nueva fila
             const row = document.createElement('tr');
-            row.className = "hover:bg-blue-50 transition group";
+            row.className = "hover:bg-blue-50 transition-colors group";
 
-            // NOTA: He mantenido las clases de estilo Tailwind que ya tenías para consistencia
             row.innerHTML = `
-            <td class="px-3 py-2 text-center text-gray-400 font-bold index-cell"></td>
-            
-            <td class="p-1">
-                <input type="text" data-field="nombre" required
-                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]/g, '')"
-                    class="w-full text-[12px] md:text-sm bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0  uppercase p-1 placeholder-gray-400" 
-                    placeholder="Nombres y Apellidos">
-            </td>
+        <td class="px-3 py-2 text-center text-gray-400 font-bold index-cell"></td>
+        
+        <td class="p-1">
+            <input type="text" data-field="nombre" required
+                oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]/g, '')"
+                class="w-full text-sm bg-transparent border-b border-gray-200 focus:border-blue-500 focus:ring-0 uppercase p-2 placeholder-gray-400 outline-none" 
+                placeholder="Nombres y Apellidos">
+        </td>
 
-            <td class="p-1">
-                <select data-field="parentesco" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">
-                    <option value="" disabled selected class="text-gray-400">Seleccione...</option>
-                    <option value="Jefe/a">Jefe/a de Hogar</option>
-                    <option value="Esposo/a">Esposo/a</option>
-                    <option value="Conviviente">Conviviente</option>
-                    <option value="Hijo/a">Hijo/a</option>
-                    <option value="Hijastro/a">Hijastro/a</option>
-                    <option value="Padre/Madre">Padre/Madre</option>
-                    <option value="Hermano/a">Hermano/a</option>
-                    <option value="Nieto/a">Nieto/a</option>
-                    <option value="Yerno/Nuera">Yerno/Nuera</option>
-                    <option value="Suegro/a">Suegro/a</option>
-                    <option value="Abuelo/a">Abuelo/a</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </td>
+        <td class="p-1">
+            <select data-field="parentesco" required 
+                class="w-full text-sm rounded border border-gray-300 bg-white px-2 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none cursor-pointer">
+                <option value="">Seleccione...</option>
+                <option value="Jefe/a">Jefe/a de Hogar</option>
+                <option value="Esposo/a">Esposo/a</option>
+                <option value="Conviviente">Conviviente</option>
+                <option value="Hijo/a">Hijo/a</option>
+                <option value="Hijastro/a">Hijastro/a</option>
+                <option value="Padre/Madre">Padre/Madre</option>
+                <option value="Hermano/a">Hermano/a</option>
+                <option value="Nieto/a">Nieto/a</option>
+                <option value="Yerno/Nuera">Yerno/Nuera</option>
+                <option value="Suegro/a">Suegro/a</option>
+                <option value="Abuelo/a">Abuelo/a</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </td>
 
-            <td class="p-1">
-                <input type="text" data-field="edad" required maxlength="3" inputmode="numeric"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value) this.value = Math.max(0, Math.min(120, parseInt(this.value)))"
-                    class="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0 text-[12px] md:text-sm text-center p-1" 
-                    placeholder="0">
-            </td>
+        <td class="p-1">
+            <input type="number" data-field="edad" required min="0" max="120"
+                class="w-full bg-transparent border-b border-gray-200 focus:border-blue-500 focus:ring-0 text-sm text-center p-2 outline-none" 
+                placeholder="0">
+        </td>
 
-            <td class="p-1">
-                <select data-field="sexo" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
-                    <option value="" disabled selected class="text-gray-400">Seleccione...</option>
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                </select>
-            </td>
+        <td class="p-1">
+            <select data-field="sexo" required 
+                class="w-full text-sm rounded border border-gray-300 bg-white px-2 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none cursor-pointer">
+                <option value="">Seleccione...</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+            </select>
+        </td>
 
-            <td class="p-1">
-                <select data-field="ecivil" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
-                    <option value="" disabled selected>Seleccione...</option>
-                    <option value="Soltero/a">Soltero/a</option>
-                    <option value="Casado/a">Casado/a</option>
-                    <option value="Conviviente">Conviviente</option>
-                    <option value="Separado/a">Separado/a</option>
-                    <option value="Divorciado/a">Divorciado/a</option>
-                    <option value="Viudo/a">Viudo/a</option>
-                </select>
-            </td>
+        <td class="p-1">
+            <select data-field="ecivil" required 
+                class="w-full text-sm rounded border border-gray-300 bg-white px-2 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none cursor-pointer">
+                <option value="">Seleccione...</option>
+                <option value="Soltero/a">Soltero/a</option>
+                <option value="Casado/a">Casado/a</option>
+                <option value="Conviviente">Conviviente</option>
+                <option value="Separado/a">Separado/a</option>
+                <option value="Divorciado/a">Divorciado/a</option>
+                <option value="Viudo/a">Viudo/a</option>
+            </select>
+        </td>
 
-            <td class="p-1">
-                <select data-field="neducativo" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
-                    <option value="" disabled selected>Seleccione...</option>
-                    <option value="Sin Instrucción">Sin Instrucción</option>
-                    <option value="Inicial">Inicial</option>
-                    <option value="Primaria Incompleta">Primaria Incomp.</option>
-                    <option value="Primaria Completa">Primaria Comp.</option>
-                    <option value="Secundaria Incompleta">Secundaria Incomp.</option>
-                    <option value="Secundaria Completa">Secundaria Comp.</option>
-                    <option value="Superior Técnico">Sup. Técnico</option>
-                    <option value="Superior Univ.">Sup. Universitario</option>
-                </select>
-            </td>
+        <td class="p-1">
+            <select data-field="neducativo" required 
+                class="w-full text-sm rounded border border-gray-300 bg-white px-2 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none cursor-pointer">
+                <option value="">Seleccione...</option>
+                <option value="Sin Instrucción">Sin Instrucción</option>
+                <option value="Inicial">Inicial</option>
+                <option value="Primaria Incompleta">Primaria Incomp.</option>
+                <option value="Primaria Completa">Primaria Comp.</option>
+                <option value="Secundaria Incompleta">Secundaria Incomp.</option>
+                <option value="Secundaria Completa">Secundaria Comp.</option>
+                <option value="Superior Técnico">Sup. Técnico</option>
+                <option value="Superior Universitario">Sup. Universitario</option>
+            </select>
+        </td>
 
-            <td class="p-1">
-                <select data-field="ocupacion" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
-                    <option value="" disabled selected>Seleccione...</option>
-                    <option value="Estudiante">Estudiante</option>
-                    <option value="Ama de Casa">Ama de Casa</option>
-                    <option value="Trabajador Independiente">Trab. Independiente</option>
-                    <option value="Empleado Dependiente">Emp. Dependiente</option>
-                    <option value="Comerciante">Comerciante</option>
-                    <option value="Obrero/a">Obrero/a</option>
-                    <option value="Agricultor/a">Agricultor/a</option>
-                    <option value="Desempleado/a">Desempleado/a</option>
-                    <option value="Jubilado/a">Jubilado/a</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </td>
+        <td class="p-1">
+            <select data-field="ocupacion" required 
+                class="w-full text-sm rounded border border-gray-300 bg-white px-2 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none cursor-pointer">
+                <option value="">Seleccione...</option>
+                <option value="Estudiante">Estudiante</option>
+                <option value="Ama de Casa">Ama de Casa</option>
+                <option value="Trabajador Independiente">Trab. Independiente</option>
+                <option value="Empleado Dependiente">Emp. Dependiente</option>
+                <option value="Comerciante">Comerciante</option>
+                <option value="Obrero/a">Obrero/a</option>
+                <option value="Agricultor/a">Agricultor/a</option>
+                <option value="Desempleado/a">Desempleado/a</option>
+                <option value="Jubilado/a">Jubilado/a</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </td>
 
-            <td class="p-1">
-                <input type="number" data-field="ingresos" step="0.01" min="0" required
-                    class="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0 text-[12px] md:text-sm text-right p-1" 
-                    placeholder="0.00"
-                    onkeydown="if(['-','+','e'].includes(event.key)) event.preventDefault();">
-            </td>
+        <td class="p-1">
+            <input type="number" data-field="ingresos" step="0.01" min="0" required
+                class="w-full bg-transparent border-b border-gray-200 focus:border-blue-500 focus:ring-0 text-sm text-right p-2 outline-none" 
+                placeholder="0.00">
+        </td>
 
-            <td class="p-1 text-center">
-                <button type="button" onclick="eliminarFila(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-[12px] md:text-lg transition-transform hover:scale-110" title="Eliminar fila">&times;</button>
-            </td>
-        `;
+        <td class="p-1 text-center">
+            <button type="button" onclick="eliminarFila(this)" 
+                class="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl transition-all hover:scale-110" 
+                title="Eliminar fila">
+                &times;
+            </button>
+        </td>
+    `;
 
             tbody.appendChild(row);
-            renumerarFilas(); // Actualiza IDs y nombres para el backend
+            renumerarFilas();
+
+            // Hacer scroll a la nueva fila
+            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Focus en el primer campo
+            const primerInput = row.querySelector('input[data-field="nombre"]');
+            if (primerInput) {
+                setTimeout(() => primerInput.focus(), 300);
+            }
         }
 
         function eliminarFila(btn) {
             const row = btn.closest('tr');
             if (row) {
-                row.remove();
-                renumerarFilas(); // Reordenamos todo
+                const confirmar = confirm("¿Está seguro que desea eliminar este integrante?");
+                if (confirmar) {
+                    row.remove();
+                    renumerarFilas();
+                }
             }
         }
 
         function renumerarFilas() {
             const tbody = document.getElementById('familiares-body');
+            if (!tbody) return;
+
             const rows = tbody.querySelectorAll('tr');
-            let contador = 0;
 
             rows.forEach((row, index) => {
-                contador = index + 1;
+                const num = index + 1;
 
-                // Actualizar ID y Número Visual
-                row.id = `fam-${contador}`;
+                // Actualizar número de fila
                 const indexCell = row.querySelector('.index-cell');
-                if (indexCell) indexCell.innerText = contador;
+                if (indexCell) {
+                    indexCell.innerText = num;
+                }
 
-                // Actualizar names para Backend (Vital para Django)
-                const inputs = row.querySelectorAll('[data-field]');
-                inputs.forEach(input => {
-                    const fieldName = input.getAttribute('data-field');
-                    input.name = `fam_${contador}_${fieldName}`;
+                // Actualizar atributos name para el backend
+                const campos = row.querySelectorAll('[data-field]');
+                campos.forEach(campo => {
+                    const fieldName = campo.getAttribute('data-field');
+                    campo.name = `fam_${num}_${fieldName}`;
                 });
             });
 
-            // Actualizar input oculto total
-            document.getElementById('total_familiares').value = contador;
-
-            // Verificar estado del botón Agregar
-            const limite = parseInt(document.getElementById('input_num_integrantes').value) || 0;
-            verificarTope(limite);
-
-            // Actualizar contador global
-            contadorFamiliares = contador;
+            // Actualizar input hidden con el total
+            const hiddenTotal = document.getElementById('total_familiares');
+            if (hiddenTotal) {
+                hiddenTotal.value = rows.length;
+            }
         }
+
+        // ============================================================================
+        // CONSOLA DE DEBUG
+        // ============================================================================
+        // console.log("✅ JavaScript del formulario cargado correctamente");
     </script>
     {% endblock %}

@@ -1,342 +1,1003 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Encuestas{% endblock %}</title>
+{% block content %}
+<style>
+    /* Ocultar barra de scroll en tabs para estética */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            400: '#38bdf8',
-                            600: '#0284c7', // Azul principal
-                            700: '#0369a1',
-                            800: '#075985',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            background-color: #F3F4F6;
-            font-family: 'Inter', sans-serif;
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Animación suave entre pestañas */
+    .fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
         }
 
-        /* CLASE ACTIVA: Fondo azul claro, texto azul fuerte, borde derecho */
-        .sidebar-active {
-            background-color: #EFF6FF; /* brand-50 */
-            color: #0284c7; /* brand-600 */
-            font-weight: 600;
-            border-right: 4px solid #0284c7;
-        }
-        
-        /* Icono activo */
-        .sidebar-active svg {
-            color: #0284c7; 
-        }
-
-        .sidebar-item:hover:not(.sidebar-active) {
-            background-color: #F9FAFB;
-            color: #111827;
-        }
-
-        @media print {
-        /* 1. OCULTAR LO INNECESARIO */
-        aside, nav, header, footer, .no-print {
-            display: none !important;
-        }
-
-        /* 2. RESETEAR LAYOUT (Full Ancho) */
-        body, html {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            background-color: white !important;
-            overflow: visible !important;
-        }
-
-        body > div, main {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .max-w-5xl, .container, .mx-auto {
-            max-width: 100% !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 10mm !important; /* Margen seguro para la impresora */
-        }
-
-        /* =========================================
-           3. AJUSTES DE TAMAÑO (TU PEDIDO)
-           ========================================= */
-        
-        /* Reducir letra general */
-        body {
-            font-size: 10pt !important; /* Letra más pequeña y nítida */
-            line-height: 1.3;
-        }
-
-        /* Títulos más compactos */
-        h1 { font-size: 16pt !important; margin-bottom: 10px !important; }
-        h2 { font-size: 14pt !important; margin-bottom: 8px !important; }
-        h3 { font-size: 11pt !important; margin-top: 10px !important; }
-
-        /* TABLAS SUPER COMPACTAS */
-        table th, table td {
-            padding: 4px 8px !important; /* Menos espacio de relleno */
-            font-size: 9pt !important;   /* Letra de tabla más chica */
-            height: auto !important;
-        }
-        
-        /* Reducir espacio entre filas de preguntas */
-        .divide-y > div {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
-        }
-
-        /* Tarjetas (Secciones) con borde fino y menos margen */
-        section, .rounded-xl, .bg-white {
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
-            box-shadow: none !important;
-            margin-bottom: 15px !important; /* Menos separación entre bloques */
-            break-inside: avoid !important; /* Evita que se corten a la mitad */
-        }
-
-        /* Colores de fondo (Imprescindible para que se vea bonito) */
-        * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        
-        /* Forzar color de textos suaves a negro para que se lean bien */
-        .text-gray-500, .text-gray-400 {
-            color: #666 !important;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
-    </style>
-</head>
+    /* Estilo de Inputs más profesional */
+    .form-input {
+        @apply w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 outline-none;
+    }
 
-<body class="bg-gray-50">
+    /* Estilos específicos para la tabla responsiva */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+</style>
 
-    {% url 'dashboard_admin' as url_admin_dashboard %}
-    {% url 'lista_usuarios' as url_admin_list %}
-    {% url 'listar_mi_equipo' as url_supervisor %}
-    {% url 'mis_encuestas' as url_encuestador %}
-    {% url 'home' as url_home %}
+<div class="max-w-6xl mx-auto pb-32 px-4 sm:px-6">
 
-    <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
-            <div class="flex items-center justify-between">
-                
-                <div class="flex items-center justify-start rtl:justify-end">
-                    <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
-                        aria-controls="logo-sidebar" type="button"
-                        class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
-                        <span class="sr-only">Abrir menú</span>
-                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-                        </svg>
-                    </button>
-                    
-                    <a href="{{ url_home }}" class="flex ms-2 md:me-24 items-center gap-2 group">
-                        <div class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md transition group-hover:bg-brand-700">
-                            D
-                        </div>
-                        <span class="self-center text-xl font-bold whitespace-nowrap text-gray-800 tracking-tight">
-                            Darema<span class="text-brand-600">Tech</span>
-                        </span>
-                    </a>
-                </div>
+    <div class="text-center mt-[25px] md:mt-0 pt-8 mb-6">
+        <h1 class="text-xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
+            Evaluación de Riesgo Social
+        </h1>
+        <p class="text-[12px] md:text-sm text-gray-500 mt-2">Complete la información solicitada en cada sección.</p>
+    </div>
 
-                <div class="flex items-center no-print">
-                    <div class="flex items-center ms-3">
-                        <div class="hidden md:block text-right mr-3">
-                            <p class="text-sm font-bold text-gray-900">{{ user.nombres }}</p>
-                            <p class="text-xs text-gray-500 font-medium">{{ user.get_rol_display }}</p>
-                        </div>
-                        <button type="button"
-                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 shadow-sm"
-                            aria-expanded="false" data-dropdown-toggle="dropdown-user">
-                            <span class="sr-only">Abrir menú usuario</span>
-                            <img class="w-9 h-9 rounded-full object-cover border-2 border-white"
-                                src="https://ui-avatars.com/api/?name={{ user.nombres }}+{{ user.apellidos }}&background=0284c7&color=fff&bold=true"
-                                alt="user photo">
-                        </button>
-                        
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg border border-gray-100" id="dropdown-user">
-                            <div class="px-4 py-3 md:hidden" role="none">
-                                <p class="text-sm text-gray-900 font-bold" role="none">{{ user.nombres }} {{ user.apellidos }}</p>
-                                <p class="text-sm font-medium text-gray-500 truncate" role="none">{{ user.email }}</p>
-                            </div>
-                            <ul class="py-1" role="none">
-                                <li>
-                                    <form action="{% url 'logout' %}" method="POST" class="block">
-                                        {% csrf_token %}
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
-                                            Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div
+        class="hidden lg:block sticky top-16 z-30 bg-gray-100/95 backdrop-blur-sm -mx-4 px-4 sm:mx-0 sm:px-0 mb-6 py-2 border-b border-gray-200/50">
+        <div class="flex space-x-2 overflow-x-auto scrollbar-hide snap-x" id="tabs-container">
+            <button type="button"
+                class="uppercase tab-btn active snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-md transition-all duration-200 flex-shrink-0"
+                data-index="0">
+                Datos Generales
+            </button>
+            <button type="button"
+                class="up tab-btn snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 flex-shrink-0"
+                data-index="1">
+                Estructura Familiar
+            </button>
 
-    {% if user.rol != 'ENCUESTADOR' %}
-    <aside id="logo-sidebar"
-        class=" fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] no-print"
-        aria-label="Sidebar">
-        
-        <div class="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col justify-between ">
-            <ul class="space-y-1 font-medium text-sm">
-
-                <li>
-                    {% if user.rol == 'ADMIN' %}
-                        <a href="{{ url_admin_dashboard }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
-                           {% if request.path == url_admin_dashboard %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% elif user.rol == 'SUPERVISOR' %}
-                        <a href="{{ url_supervisor }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
-                           {% if request.path == url_supervisor %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% else %}
-                        <a href="{{ url_encuestador }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
-                           {% if request.path == url_encuestador %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% endif %}
-                        
-                        <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" 
-                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                            <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                            <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                        </svg>
-                        
-                        <span class="ms-3">
-                            {% if user.rol == 'ADMIN' %}Panel General
-                            {% elif user.rol == 'SUPERVISOR' %}Mi Equipo (Inicio)
-                            {% else %}Mis Encuestas{% endif %}
-                        </span>
-                    </a>
-                </li>
-
-                <li class="my-4 border-t border-gray-100"></li>
-
-                {% if user.rol == 'ADMIN' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</div>
-                    </li>
-                    <li>
-                        <a href="{{ url_admin_list }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
-                           {% if '/usuarios/' in request.path and '/mi-equipo/' not in request.path and '/dashboard-general/' not in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                            
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                            </svg>
-                            <span class="ms-3">Usuarios del Sistema</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% if user.rol == 'SUPERVISOR' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Supervisión</div>
-                    </li>
-                    <li>
-                        <a href="{{ url_supervisor }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
-                           {% if '/mi-equipo/' in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                           
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                            </svg>
-                            <span class="ms-3">Gestión de Equipo</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% if user.rol == 'ENCUESTADOR' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Campo</div>
-                    </li>
-                    <li>
-                        <a href="{% url 'registrar_ficha' %}"
-                           class="flex items-center p-3 rounded-lg hover:bg-blue-50 group border border-dashed border-gray-300 hover:border-blue-400 hover:text-blue-700 transition-all 
-                           {% if '/nueva/' in request.path %}bg-blue-50 border-blue-400 text-blue-700 font-bold shadow-sm{% else %}text-gray-900{% endif %}">
-                           
-                            <svg class="w-5 h-5 transition duration-75 {% if '/nueva/' in request.path %}text-blue-600{% else %}text-gray-500 group-hover:text-blue-600{% endif %}" 
-                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            <span class="ms-3 font-medium">Nueva Atención</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-            </ul>
-
-            <div class="mt-auto pt-6 border-t border-gray-100">
-                <a href="#" class="flex items-center p-3 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100 group transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="ms-3">Soporte / Ayuda</span>
-                </a>
-                <p class="px-3 py-2 text-xs text-gray-300 text-center">v1.0.0 DaremaTech</p>
-            </div>
-        </div>
-    </aside>
-    {% endif %}
-
-    <div class="p-0 md:p-4 {% if user.rol != 'ENCUESTADOR' %}sm:ml-64{% endif %}">
-        <div class="p-[5px] md:p-4  mt-[20px] md:mt-14 max-w-7xl mx-auto">
-            {% if messages %}
-                {% for message in messages %}
-                <div id="alert-{{ forloop.counter }}" class="flex items-center p-4 mb-4 rounded-lg shadow-sm border
-                    {% if message.tags == 'success' %}text-green-800 border-green-200 bg-green-50{% elif message.tags == 'error' %}text-red-800 border-red-200 bg-red-50{% else %}text-blue-800 border-blue-200 bg-blue-50{% endif %}" role="alert">
-                    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <div class="ms-3 text-sm font-medium">{{ message }}</div>
-                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex items-center justify-center h-8 w-8
-                        {% if message.tags == 'success' %}bg-green-50 text-green-500 focus:ring-green-400 hover:bg-green-200{% else %}bg-blue-50 text-blue-500 focus:ring-blue-400 hover:bg-blue-200{% endif %}" 
-                        data-dismiss-target="#alert-{{ forloop.counter }}" aria-label="Close">
-                        <span class="sr-only">Cerrar</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                    </button>
-                </div>
-                {% endfor %}
-            {% endif %}
-
-            {% block content %}{% endblock %}
+            {% for dim in dimensiones %}
+            <button type="button"
+                class="tab-btn snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 flex-shrink-0"
+                data-index="{{ forloop.counter|add:1 }}">
+                {{ dim.nombre }}
+            </button>
+            {% endfor %}
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    {% block extra_js %}{% endblock %}
-</body>
-</html>
+    <form method="POST" id="form-riesgo" class="relative">
+        {% csrf_token %}
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden min-h-[500px]">
+
+            <div class="tab-pane fade-in p-6 md:p-8 block" data-step="0">
+                <div class="mb-8 border-l-4 border-blue-500 pl-4">
+                    <h2 class="text-[14px] md:text-xl font-bold text-gray-800">Datos Generales del Encuestado</h2>
+                    <p class="text-[12px] md:text-sm text-gray-400">Detalle del encuestado</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Nombres:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="text" name="nombres_encuestado" required class="form-input uppercase"
+                                placeholder="Ingrese apellidos y nombres completos">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Apellidos:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="text" name="apellidos_encuestado" required class="form-input uppercase"
+                                placeholder="Ingrese apellidos y nombres completos">
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Edad:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="number" name="edad" required class="form-input" placeholder="Ej: 15">
+                        </div>
+                        <div>
+                            <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Fecha de
+                                Nacimiento:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="date" name="fecha_nacimiento" required class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">DNI:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="text" name="dni" required maxlength="8" class="form-input" placeholder="DNI">
+                        </div>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <div class="md:col-span-4">
+                            <label class="block  text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Sexo:</label>
+                            <div class="radio-group mt-2">
+                                <label class="radio-label mr-4 text-[12px] md:text-sm">
+                                    <input type="radio" class=" " name="sexo" value="M" required> Masculino
+                                </label>
+                                <label class="radio-label text-[12px] md:text-sm mr-4">
+                                    <input type="radio" name="sexo" value="F" class="radio-input "> Femenino
+                                </label>
+                            </div>
+                        </div>
+                        <div class="md:col-span-8">
+                            <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Nivel
+                                Educativo:</label>
+                            <div class="radio-group mt-2">
+                                <label class="radio-label text-[12px] md:text-sm mr-4">
+                                    <input type="radio" name="nivel_educativo" required value="Primaria"
+                                        class="radio-input ">
+                                    Primaria
+                                </label>
+                                <label class="radio-label text-[12px] md:text-sm mr-4">
+                                    <input type="radio" name="nivel_educativo" value="Secundaria" class="radio-input ">
+                                    Secundaria
+                                </label>
+                                <label class="radio-label text-[12px] md:text-sm mr-4">
+                                    <input type="radio" name="nivel_educativo" value="Universidad" class="radio-input ">
+                                    Universidad
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label
+                                class="form-label font-bold text-gray-700 mb-1 block  text-[12px] md:text-sm">Departamento
+                                (Actual)</label>
+                            <select name="ubigeo_departamento" id="cbo_dep_actual"
+                                class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none"
+                                onchange="cargarProvincias('actual')" required>
+                                <option value="">-- Seleccione --</option>
+                                {% for d in departamentos %}
+                                <option value="{{ d.id }}">{{ d.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label
+                                class="form-label font-bold text-gray-700 mb-1 block text-[12px] md:text-sm">Provincia
+                                (Actual)</label>
+                            <select name="ubigeo_provincia" id="cbo_prov_actual"
+                                class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none"
+                                onchange="cargarDistritos('actual')" disabled>
+                                <option value="">-- Primero Dpto --</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="form-label font-bold text-gray-700 mb-1 block text-[12px] md:text-sm">Distrito
+                                (Actual)</label>
+                            <select name="ubigeo_distrito" id="cbo_dist_actual"
+                                class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none"
+                                disabled>
+                                <option value="">-- Primero Prov --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Dirección
+                            Actual:</label>
+                        <input
+                            class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                            type="text" name="direccion" required class="form-input"
+                            placeholder="Av./Calle, Número/Interior">
+                    </div>
+
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Teléfono de
+                                contacto:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="tel" name="telefono" required>
+                        </div>
+                        <div><label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Email:</label>
+                            <input
+                                class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                type="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50/50 p-6 rounded-xl border border-blue-100 mt-4">
+                        <label class="text-blue-800 font-bold mb-4 block border-b border-blue-100 pb-2">En caso de
+                            emergencia contactar a:</label>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="text-[12px] md:text-sm font-semibold text-gray-500  uppercase">Nombre Completo</label>
+                                <input type="text" name="emergencia_contacto"
+                                    class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Teléfono</label>
+                                <input type="text" name="emergencia_telefono"
+                                    class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                                    required>
+                            </div>
+                            <div>
+                                
+                                <label class="text-[12px] md:text-sm font-semibold text-gray-500 uppercase">Parentesco</label>
+                                <select name="emergencia_parentesco" required
+                                    class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-3  py-2 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer outline-none">
+                                    <option value="">Seleccione parentesco...</option>
+                                    <option value="Padre">Padre</option>
+                                    <option value="Madre">Madre</option>
+                                    <option value="Hijo">Hijo</option>
+                                    <option value="Hija">Hija</option>
+                                    <option value="Hermano">Hermano</option>
+                                    <option value="Hermana">Hermana</option>
+                                    <option value="Abuelo">Abuelo</option>
+                                    <option value="Abuela">Abuela</option>
+                                    <option value="Tío">Tío</option>
+                                    <option value="Tía">Tía</option>
+                                    <option value="Primo">Primo</option>
+                                    <option value="Prima">Prima</option>
+                                    <option value="Esposo">Esposo</option>
+                                    <option value="Esposa">Esposa</option>
+                                    <option value="Pareja">Pareja</option>
+                                    <option value="Suegro">Suegro</option>
+                                    <option value="Suegra">Suegra</option>
+                                    <option value="Cuñado">Cuñado</option>
+                                    <option value="Cuñada">Cuñada</option>
+                                    <option value="Yerno">Yerno</option>
+                                    <option value="Nuera">Nuera</option>
+                                    <option value="Amigo">Amigo</option>
+                                    <option value="Amiga">Amiga</option>
+                                    <option value="Vecino">Vecino</option>
+                                    <option value="Vecina">Vecina</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="tab-pane fade-in p-6 md:p-8 hidden" data-step="1">
+                <div class="mb-8 border-l-4 border-blue-500 pl-4">
+                    <h2 class="text-[14px] md:text-xl font-bold text-gray-800">Estructura Familiar</h2>
+                    <p class="text-[12px] md:text-sm text-gray-400">Detalle de los miembros del hogar</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Jefe de Hogar</label>
+                        <input type="text" name="jefe_hogar"
+                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')"
+                            class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 uppercase"
+                            placeholder="Nombre del jefe/a" required>
+                    </div>
+                    <div>
+                        <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Número total de integrantes</label>
+                        <input type="number" name="num_integrantes" id="input_num_integrantes" min="0"
+                            class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-3 md:px-4 py-2 md:py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
+                            placeholder="Ej: 3" required onfocus="this.dataset.valorPrevio = this.value"
+                            oninput="controlarLimiteFamilia(this)">
+                    </div>
+                </div>
+
+                <div id="tabla-container-familia"
+                    class="table-container border border-gray-200 mb-4 hidden transition-all duration-300">
+                    <table class="w-full text-[12px] md:text-sm text-left min-w-[1000px]">
+                        <thead class="text-xs text-white uppercase bg-blue-600">
+                            <tr>
+                                <th class="px-3 py-4 w-10 text-center">#</th>
+                                <th class="px-3 py-4 min-w-[180px]">Nombres y Apellidos</th>
+                                <th class="px-3 py-4 w-32">Parentesco</th>
+                                <th class="px-3 py-4 w-20">Edad</th>
+                                <th class="px-3 py-4 w-24">Sexo</th>
+                                <th class="px-3 py-4 w-32">Est. Civil</th>
+                                <th class="px-3 py-4 w-32">Nivel Edu.</th>
+                                <th class="px-3 py-4 w-32">Ocupación</th>
+                                <th class="px-3 py-4 w-28">Ingresos</th>
+                                <th class="px-3 py-4 w-12"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="familiares-body" class=" text-[12px] md:text-sm divide-y divide-gray-100 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end mb-6">
+                    <button type="button" id="btn-add-familiar" onclick="agregarFilaFamiliar()"
+                        class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold transition-colors border border-blue-200 disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Agregar Integrante
+                    </button>
+                </div>
+
+                <input type="hidden" name="total_familiares" id="total_familiares" value="0">
+
+                <div class="mt-6">
+                    <label class="block text-[12px] md:text-sm font-bold text-gray-700 mb-1.5">Observaciones</label>
+                    <textarea name="observaciones_familia" rows="3"
+                        class="w-full text-[12px] md:text-sm rounded-lg border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20"></textarea>
+                </div>
+            </div>
+
+
+            {% for dim in dimensiones %}
+            <div class="tab-pane fade-in p-6 md:p-8 hidden" data-step="{{ forloop.counter|add:1 }}">
+                <div class="mb-8 border-l-4 border-blue-500 pl-4">
+                    <h2 class="text-xl font-bold text-gray-800">{{ dim.nombre }}</h2>
+                    <p class="text-sm text-gray-400 italic">{{ dim.descripcion }}</p>
+                </div>
+
+                <div class="space-y-5">
+                    {% for pregunta in dim.preguntas.all %}
+                    <div
+                        class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:border-blue-300 hover:shadow-md transition-all duration-200">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-shrink-0">
+                                <span
+                                    class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm shadow-sm">
+                                    {{ pregunta.orden }}
+                                </span>
+                            </div>
+
+                            <div class="flex-grow">
+                                <label
+                                    class="block text-gray-800 font-medium mb-3 text-sm md:text-base leading-relaxed">
+                                    {{ pregunta.enunciado }}
+                                </label>
+
+                                <div class="relative">
+                                    <select name="pregunta_{{ pregunta.id }}" required
+                                        class="block w-full appearance-none rounded-lg border border-gray-300 bg-gray-50 py-3 px-4 pr-10 leading-tight text-gray-700 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors cursor-pointer">
+                                        <option value="">Seleccione una opción...</option>
+                                        {% for opcion in pregunta.opciones.all %}
+                                        <option value="{{ opcion.id }}">
+                                            {{ opcion.texto }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div
+            class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40">
+            <div class="max-w-5xl mx-auto flex justify-between items-center gap-4">
+                <button type="button" onclick="confirmarSalida()"
+                    class="px-4 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition w-full sm:w-auto flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                    <span class=" sm:inline">Salir</span>
+                </button>
+
+                <button type="button" id="btn-prev"
+                    class="px-6 py-3 rounded-xl border border-gray-300 text-gray-600 font-bold hover:bg-gray-50 active:scale-95 transition hidden w-full sm:w-auto">
+                    Anterior
+                </button>
+
+                <div class="hidden sm:block text-xs font-semibold text-gray-400 uppercase tracking-widest">
+                    Sección <span id="current-step-display">1</span> / <span id="total-steps-display">X</span>
+                </div>
+
+                <button type="button" id="btn-next"
+                    class="px-8 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 active:scale-95 transition w-full sm:w-auto">
+                    Siguiente
+                </button>
+
+                <button type="submit" id="btn-submit"
+                    class="hidden px-8 py-3 rounded-xl bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 hover:shadow-green-500/30 active:scale-95 transition w-full sm:w-auto">
+                    Finalizar y Guardar
+                </button>
+            </div>
+        </div>
+
+    </form>
+
+
+    <script>
+        // UBICACIÓN: Dentro de <script>, antes de document.addEventListener...
+
+        function confirmarSalida() {
+            // URL a la que quieres volver (Dashboard o Mis Encuestas)
+            const urlDestino = "{% url 'mis_encuestas' %}";
+
+            if (typeof formularioSucio !== 'undefined' && formularioSucio) {
+                // Si hay datos modificados, preguntamos
+                const confirmar = confirm("⚠️ ATENCIÓN: Hay datos sin guardar.\n\nSi sale ahora, perderá el progreso de esta ficha.\n\n¿Está seguro que desea salir?");
+
+                if (confirmar) {
+                    // Importante: Desactivamos la bandera para que el navegador no bloquee la redirección
+                    formularioSucio = false;
+                    window.location.href = urlDestino;
+                }
+            } else {
+                // Si no hay cambios, salimos directamente
+                window.location.href = urlDestino;
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // ======================================================
+            // 1. CONFIGURACIÓN INICIAL
+            // ======================================================
+            let currentStep = 0;
+            const steps = document.querySelectorAll(".tab-pane");
+            const tabButtons = document.querySelectorAll(".tab-btn");
+            const btnNext = document.getElementById("btn-next");
+            const btnPrev = document.getElementById("btn-prev");
+            const btnSubmit = document.getElementById("btn-submit");
+            const totalSteps = steps.length;
+
+            // Inicializar tabla de familiares
+            if (document.getElementById('familiares-body')) {
+                agregarFilaFamiliar();
+            }
+
+            // ======================================================
+            // 2. PROTECCIÓN CONTRA CIERRE ACCIDENTAL
+            // ======================================================
+            let formularioSucio = false;
+            const form = document.getElementById('form-riesgo');
+
+            form.addEventListener('change', () => { formularioSucio = true; });
+            form.addEventListener('input', () => { formularioSucio = true; });
+
+            window.addEventListener('beforeunload', function (e) {
+                if (formularioSucio) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            form.addEventListener('submit', () => { formularioSucio = false; });
+
+            // ======================================================
+            // 3. LÓGICA DE VALIDACIÓN (EL CORAZÓN DEL PROBLEMA)
+            // ======================================================
+
+            function mostrarError(input) {
+                // Borde rojo para inputs normales
+                input.classList.remove('border-gray-300');
+                input.classList.add('border-red-500', 'ring-2', 'ring-red-100');
+
+                // Para Radio Buttons, buscamos su contenedor padre para pintarlo
+                if (input.type === 'radio') {
+                    const parent = input.closest('.radio-group') || input.parentElement;
+                    parent.classList.add('border', 'border-red-500', 'rounded-lg', 'p-1', 'bg-red-50');
+                }
+            }
+
+            function limpiarError(input) {
+                input.classList.remove('border-red-500', 'ring-2', 'ring-red-100');
+                input.classList.add('border-gray-300');
+
+                if (input.type === 'radio') {
+                    const parent = input.closest('.radio-group') || input.parentElement;
+                    parent.classList.remove('border', 'border-red-500', 'rounded-lg', 'p-1', 'bg-red-50');
+                }
+            }
+
+            function validarPasoActual() {
+                const currentPanel = steps[currentStep];
+                let esValido = true;
+                let primerError = null;
+
+                // =================================================================
+                // 1. VALIDACIÓN ESPECIAL: COINCIDENCIA DE TABLA (SOLO EN PASO 1)
+                // =================================================================
+                if (currentStep === 1) { // 1 es el índice de "Estructura Familiar"
+                    const inputTotal = document.getElementById('input_num_integrantes');
+                    const tbody = document.getElementById('familiares-body');
+
+                    // Asegurarnos que existan los elementos
+                    if (inputTotal && tbody) {
+                        const totalEsperado = parseInt(inputTotal.value) || 0;
+                        // Contamos solo las filas TR directas del body
+                        const filasReales = tbody.querySelectorAll('tr').length;
+
+                        // A. Validar que el número total sea mayor a 0
+                        if (totalEsperado <= 0) {
+                            alert("⚠️ Por favor, ingrese el número total de integrantes (mínimo 1).");
+                            inputTotal.focus();
+                            mostrarError(inputTotal);
+                            return false; // <--- BLOQUEA EL AVANCE AQUÍ
+                        }
+
+                        // B. Validar coincidencia exacta (Input vs Tabla)
+                        if (totalEsperado !== filasReales) {
+                            alert(`🛑 ERROR DE CANTIDAD:\n\nUd. indicó: ${totalEsperado} integrantes.\nEn la tabla hay: ${filasReales} filas.\n\nPor favor agregue o elimine integrantes hasta que coincidan.`);
+
+                            // Resaltar visualmente el botón de agregar
+                            const btnAdd = document.getElementById('btn-add-familiar');
+                            if (btnAdd) {
+                                btnAdd.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                btnAdd.classList.add('ring-4', 'ring-red-400', 'bg-red-50');
+                                setTimeout(() => btnAdd.classList.remove('ring-4', 'ring-red-400', 'bg-red-50'), 2000);
+                            }
+                            return false; // <--- BLOQUEA EL AVANCE AQUÍ
+                        }
+                    }
+                }
+
+                // =================================================================
+                // 2. VALIDACIÓN ESTÁNDAR DE CAMPOS VACÍOS (TU LÓGICA ACTUAL)
+                // =================================================================
+
+                // A. INPUTS VISIBLES
+                const inputs = currentPanel.querySelectorAll("input:not([type='radio']):not([type='hidden']), select, textarea");
+
+                inputs.forEach(input => {
+                    // Verificar si es visible y requerido
+                    if (input.offsetParent !== null && input.hasAttribute('required')) {
+                        if (!input.value.trim()) {
+                            esValido = false;
+                            mostrarError(input);
+                            if (!primerError) primerError = input;
+                        } else {
+                            limpiarError(input);
+                        }
+                    }
+                });
+
+                // B. RADIO BUTTONS
+                const radioNames = new Set();
+                currentPanel.querySelectorAll("input[type='radio'][required]").forEach(r => {
+                    if (r.offsetParent !== null) radioNames.add(r.name);
+                });
+
+                radioNames.forEach(name => {
+                    const radios = currentPanel.querySelectorAll(`input[name="${name}"]`);
+                    const algunoMarcado = Array.from(radios).some(r => r.checked);
+
+                    if (!algunoMarcado) {
+                        esValido = false;
+                        radios.forEach(r => mostrarError(r));
+                        if (!primerError) primerError = radios[0];
+                    } else {
+                        radios.forEach(r => limpiarError(r));
+                    }
+                });
+
+                // ACCIÓN FINAL: SCROLL AL ERROR
+                if (primerError) {
+                    primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (primerError.type !== 'radio') primerError.focus({ preventScroll: true });
+
+                    primerError.classList.add('animate-pulse');
+                    setTimeout(() => primerError.classList.remove('animate-pulse'), 500);
+                }
+
+                return esValido;
+            }
+            // ======================================================
+            // 4. NAVEGACIÓN (TABS)
+            // ======================================================
+            function updateButtons() {
+                if (currentStep === 0) btnPrev.classList.add("hidden");
+                else btnPrev.classList.remove("hidden");
+
+                if (currentStep === totalSteps - 1) {
+                    btnNext.classList.add("hidden");
+                    btnSubmit.classList.remove("hidden");
+                } else {
+                    btnNext.classList.remove("hidden");
+                    btnSubmit.classList.add("hidden");
+                }
+
+                // Actualizar textos de pasos
+                const display = document.getElementById("current-step-display");
+                if (display) display.innerText = currentStep + 1;
+            }
+
+            function showStep(index) {
+                steps.forEach((step, idx) => {
+                    if (idx === index) {
+                        step.classList.remove("hidden");
+                        step.classList.add("block");
+                    } else {
+                        step.classList.add("hidden");
+                        step.classList.remove("block");
+                    }
+                });
+
+                tabButtons.forEach((btn, idx) => {
+                    if (idx === index) {
+                        btn.classList.add("bg-blue-600", "text-white", "shadow-md");
+                        btn.classList.remove("bg-white", "text-gray-600", "border");
+                        // Auto-scroll del menú superior en móvil
+                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        btn.classList.remove("bg-blue-600", "text-white", "shadow-md");
+                        btn.classList.add("bg-white", "text-gray-600", "border");
+                    }
+                });
+
+                currentStep = index;
+                updateButtons();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // EVENTO: BOTÓN SIGUIENTE
+            btnNext.addEventListener("click", function () {
+                if (validarPasoActual()) {
+                    if (currentStep < totalSteps - 1) {
+                        showStep(currentStep + 1);
+                    }
+                } else {
+                    console.log("Faltan campos obligatorios");
+                }
+            });
+
+            // EVENTO: BOTÓN ANTERIOR
+            btnPrev.addEventListener("click", function () {
+                if (currentStep > 0) showStep(currentStep - 1);
+            });
+
+            // EVENTO: TABS SUPERIORES (Clickeables)
+            tabButtons.forEach((btn, idx) => {
+                btn.addEventListener("click", function () {
+
+                    // CASO 1: El usuario quiere retroceder (idx < currentStep)
+                    // Lo permitimos siempre para que pueda corregir
+                    if (idx < currentStep) {
+                        showStep(idx);
+                        return;
+                    }
+
+                    // CASO 2: El usuario quiere avanzar (idx > currentStep)
+                    if (idx > currentStep) {
+
+                        // A. Evitar saltos grandes (Ej: del paso 1 al 3 sin pasar por el 2)
+                        if (idx > currentStep + 1) {
+                            alert("🚫 Por favor, avance en orden secuencial completando cada sección.");
+                            return;
+                        }
+
+                        // B. Validar el paso actual antes de permitir el cambio
+                        if (validarPasoActual()) {
+                            showStep(idx);
+                        } else {
+                            // Si falla, validarPasoActual ya muestra los errores y hace focus
+                            console.log("Bloqueo por validación incompleta");
+                        }
+                    }
+                });
+            });
+
+            // Limpiar errores en tiempo real mientras el usuario escribe
+            form.addEventListener('input', function (e) {
+                if (e.target.classList.contains('border-red-500') || e.target.type === 'radio') {
+                    limpiarError(e.target);
+                }
+            });
+
+            // Iniciar
+            showStep(0);
+        });
+
+        // ======================================================
+        // 5. FUNCIONES DE NEGOCIO (Ubigeo, Familia, Toggle)
+        // ======================================================
+
+        // --- UBIGEO ---
+        function cargarProvincias(tipo) {
+            const depId = document.getElementById(`cbo_dep_${tipo}`).value;
+            const cboProv = document.getElementById(`cbo_prov_${tipo}`);
+            const cboDist = document.getElementById(`cbo_dist_${tipo}`);
+
+            cboProv.innerHTML = '<option value="">Cargando...</option>'; cboProv.disabled = true;
+            if (cboDist) { cboDist.innerHTML = '<option value="">--</option>'; cboDist.disabled = true; cboProv.required = true; }
+
+            if (depId) {
+                fetch(`/ubigeo/api/provincias/?dep_id=${depId}`)
+                    .then(r => r.json()).then(data => {
+                        let html = '<option value="">-- Seleccione --</option>';
+                        data.forEach(d => html += `<option value="${d.id}">${d.nombre}</option>`);
+                        cboProv.innerHTML = html; cboProv.disabled = false;
+                    });
+            } else {
+                cboProv.innerHTML = '<option value="">-- Seleccione Dpto --</option>';
+            }
+        }
+
+        function cargarDistritos(tipo) {
+            const provId = document.getElementById(`cbo_prov_${tipo}`).value;
+            const cboDist = document.getElementById(`cbo_dist_${tipo}`);
+            if (!cboDist) return;
+
+            cboDist.innerHTML = '<option value="">Cargando...</option>'; cboDist.disabled = true; cboDist.required = true;
+            if (provId) {
+                fetch(`/ubigeo/api/distritos/?prov_id=${provId}`)
+                    .then(r => r.json()).then(data => {
+                        let html = '<option value="">-- Seleccione --</option>';
+                        data.forEach(d => html += `<option value="${d.id}">${d.nombre}</option>`);
+                        cboDist.innerHTML = html; cboDist.disabled = false;
+                    });
+            } else {
+                cboDist.innerHTML = '<option value="">-- Seleccione Prov --</option>';
+            }
+        }
+
+
+        // ======================================================
+        // LOGICA DE FAMILIA (CON PROTECCIÓN DE BORRADO)
+        // ======================================================
+
+        // Inicializar contador global
+        let contadorFamiliares = 0;
+
+        // Función principal disparada por el input
+        function controlarLimiteFamilia(input) {
+            const nuevoLimite = parseInt(input.value) || 0;
+            const tablaContainer = document.getElementById('tabla-container-familia');
+            const btnAdd = document.getElementById('btn-add-familiar');
+            const tbody = document.getElementById('familiares-body');
+            const filas = tbody.querySelectorAll('tr');
+            const filasActuales = filas.length;
+
+            // 1. GESTIÓN DE REDUCCIÓN (El usuario bajó el número)
+            if (nuevoLimite < filasActuales) {
+                const filasSobrantes = Array.from(filas).slice(nuevoLimite); // Las filas que se irían
+
+                // Verificamos si alguna de las filas sobrantes tiene datos escritos
+                let hayDatos = filasSobrantes.some(fila => {
+                    const inputs = fila.querySelectorAll('input, select');
+                    return Array.from(inputs).some(i => i.value.trim() !== '' && i.type !== 'hidden');
+                });
+
+                if (hayDatos) {
+                    const confirmar = confirm(`⚠️ ATENCIÓN:\n\nAl reducir el número a ${nuevoLimite}, se eliminarán las últimas ${filasActuales - nuevoLimite} filas que contienen datos.\n\n¿Está seguro de continuar?`);
+
+                    if (!confirmar) {
+                        // Si cancela, restauramos el valor anterior del input y salimos
+                        input.value = input.dataset.valorPrevio || filasActuales;
+                        return;
+                    }
+                }
+
+                // Si no hay datos o confirmó, eliminamos las filas sobrantes
+                filasSobrantes.forEach(fila => fila.remove());
+                renumerarFilas(); // Reordenamos índices
+            }
+
+            // 2. ACTUALIZAR VISIBILIDAD Y BOTÓN
+            if (nuevoLimite > 0) {
+                tablaContainer.classList.remove('hidden');
+                btnAdd.classList.remove('hidden');
+            } else {
+                tablaContainer.classList.add('hidden');
+                btnAdd.classList.add('hidden');
+            }
+
+            // 3. ACTUALIZAR ESTADO DEL BOTÓN "AGREGAR"
+            verificarTope(nuevoLimite);
+
+            // 4. GUARDAR EL NUEVO VALOR COMO "PREVIO" (Para la próxima vez)
+            input.dataset.valorPrevio = nuevoLimite;
+        }
+
+        // Función auxiliar para bloquear/desbloquear botón agregar
+        function verificarTope(limite) {
+            const tbody = document.getElementById('familiares-body');
+            const btnAdd = document.getElementById('btn-add-familiar');
+            // Contamos filas reales en el DOM
+            const filasActuales = tbody.querySelectorAll('tr').length;
+
+            if (filasActuales >= limite) {
+                btnAdd.disabled = true;
+                btnAdd.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100', 'text-gray-400');
+                btnAdd.classList.remove('hover:bg-blue-100', 'bg-blue-50', 'text-blue-600');
+                btnAdd.innerHTML = `<span class="font-normal">Límite completado (${limite}/${limite})</span>`;
+            } else {
+                btnAdd.disabled = false;
+                btnAdd.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-100', 'text-gray-400');
+                btnAdd.classList.add('hover:bg-blue-100', 'bg-blue-50', 'text-blue-600');
+                btnAdd.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Agregar Integrante
+            `;
+            }
+        }
+
+        function agregarFilaFamiliar() {
+            const inputNum = document.getElementById('input_num_integrantes');
+            const limite = parseInt(inputNum.value) || 0;
+            const tbody = document.getElementById('familiares-body');
+
+            // Validación de seguridad (Límite)
+            if (tbody.querySelectorAll('tr').length >= limite) {
+                inputNum.focus();
+                inputNum.classList.add('ring-4', 'ring-red-200');
+                setTimeout(() => inputNum.classList.remove('ring-4', 'ring-red-200'), 500);
+                return;
+            }
+
+            const row = document.createElement('tr');
+            row.className = "hover:bg-blue-50 transition group";
+
+            // NOTA: He mantenido las clases de estilo Tailwind que ya tenías para consistencia
+            row.innerHTML = `
+            <td class="px-3 py-2 text-center text-gray-400 font-bold index-cell"></td>
+            
+            <td class="p-1">
+                <input type="text" data-field="nombre" required
+                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]/g, '')"
+                    class="w-full text-[12px] md:text-sm bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0  uppercase p-1 placeholder-gray-400" 
+                    placeholder="Nombres y Apellidos">
+            </td>
+
+            <td class="p-1">
+                <select data-field="parentesco" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">
+                    <option value="" disabled selected class="text-gray-400">Seleccione...</option>
+                    <option value="Jefe/a">Jefe/a de Hogar</option>
+                    <option value="Esposo/a">Esposo/a</option>
+                    <option value="Conviviente">Conviviente</option>
+                    <option value="Hijo/a">Hijo/a</option>
+                    <option value="Hijastro/a">Hijastro/a</option>
+                    <option value="Padre/Madre">Padre/Madre</option>
+                    <option value="Hermano/a">Hermano/a</option>
+                    <option value="Nieto/a">Nieto/a</option>
+                    <option value="Yerno/Nuera">Yerno/Nuera</option>
+                    <option value="Suegro/a">Suegro/a</option>
+                    <option value="Abuelo/a">Abuelo/a</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </td>
+
+            <td class="p-1">
+                <input type="text" data-field="edad" required maxlength="3" inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value) this.value = Math.max(0, Math.min(120, parseInt(this.value)))"
+                    class="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0 text-[12px] md:text-sm text-center p-1" 
+                    placeholder="0">
+            </td>
+
+            <td class="p-1">
+                <select data-field="sexo" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
+                    <option value="" disabled selected class="text-gray-400">Seleccione...</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select>
+            </td>
+
+            <td class="p-1">
+                <select data-field="ecivil" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option value="Soltero/a">Soltero/a</option>
+                    <option value="Casado/a">Casado/a</option>
+                    <option value="Conviviente">Conviviente</option>
+                    <option value="Separado/a">Separado/a</option>
+                    <option value="Divorciado/a">Divorciado/a</option>
+                    <option value="Viudo/a">Viudo/a</option>
+                </select>
+            </td>
+
+            <td class="p-1">
+                <select data-field="neducativo" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option value="Sin Instrucción">Sin Instrucción</option>
+                    <option value="Inicial">Inicial</option>
+                    <option value="Primaria Incompleta">Primaria Incomp.</option>
+                    <option value="Primaria Completa">Primaria Comp.</option>
+                    <option value="Secundaria Incompleta">Secundaria Incomp.</option>
+                    <option value="Secundaria Completa">Secundaria Comp.</option>
+                    <option value="Superior Técnico">Sup. Técnico</option>
+                    <option value="Superior Univ.">Sup. Universitario</option>
+                </select>
+            </td>
+
+            <td class="p-1">
+                <select data-field="ocupacion" required class="w-full text-[12px] md:text-sm rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer">>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option value="Estudiante">Estudiante</option>
+                    <option value="Ama de Casa">Ama de Casa</option>
+                    <option value="Trabajador Independiente">Trab. Independiente</option>
+                    <option value="Empleado Dependiente">Emp. Dependiente</option>
+                    <option value="Comerciante">Comerciante</option>
+                    <option value="Obrero/a">Obrero/a</option>
+                    <option value="Agricultor/a">Agricultor/a</option>
+                    <option value="Desempleado/a">Desempleado/a</option>
+                    <option value="Jubilado/a">Jubilado/a</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </td>
+
+            <td class="p-1">
+                <input type="number" data-field="ingresos" step="0.01" min="0" required
+                    class="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:ring-0 text-[12px] md:text-sm text-right p-1" 
+                    placeholder="0.00"
+                    onkeydown="if(['-','+','e'].includes(event.key)) event.preventDefault();">
+            </td>
+
+            <td class="p-1 text-center">
+                <button type="button" onclick="eliminarFila(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-[12px] md:text-lg transition-transform hover:scale-110" title="Eliminar fila">&times;</button>
+            </td>
+        `;
+
+            tbody.appendChild(row);
+            renumerarFilas(); // Actualiza IDs y nombres para el backend
+        }
+
+        function eliminarFila(btn) {
+            const row = btn.closest('tr');
+            if (row) {
+                row.remove();
+                renumerarFilas(); // Reordenamos todo
+            }
+        }
+
+        function renumerarFilas() {
+            const tbody = document.getElementById('familiares-body');
+            const rows = tbody.querySelectorAll('tr');
+            let contador = 0;
+
+            rows.forEach((row, index) => {
+                contador = index + 1;
+
+                // Actualizar ID y Número Visual
+                row.id = `fam-${contador}`;
+                const indexCell = row.querySelector('.index-cell');
+                if (indexCell) indexCell.innerText = contador;
+
+                // Actualizar names para Backend (Vital para Django)
+                const inputs = row.querySelectorAll('[data-field]');
+                inputs.forEach(input => {
+                    const fieldName = input.getAttribute('data-field');
+                    input.name = `fam_${contador}_${fieldName}`;
+                });
+            });
+
+            // Actualizar input oculto total
+            document.getElementById('total_familiares').value = contador;
+
+            // Verificar estado del botón Agregar
+            const limite = parseInt(document.getElementById('input_num_integrantes').value) || 0;
+            verificarTope(limite);
+
+            // Actualizar contador global
+            contadorFamiliares = contador;
+        }
+    </script>
+    {% endblock %}

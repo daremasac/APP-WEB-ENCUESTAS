@@ -10,6 +10,22 @@ from django.utils import timezone
 from django.db.models import Q
 from .forms import PreguntaForm, OpcionFormSet
 from django.db import transaction
+#apartado del administrador
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Q
+
+# Importar modelos y forms
+from .models import Institucion, Dimension, Pregunta
+from .forms import InstitucionForm, DimensionForm, PreguntaForm
+
+def es_admin(user):
+    return user.is_authenticated and user.rol == 'ADMIN'
+
+
+# =======================================================
 
 @login_required 
 def mis_encuestas(request):
@@ -279,19 +295,7 @@ def exportar_excel(request):
     return response
 
 
-#apartado del administrador
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib import messages
-from django.core.paginator import Paginator
-from django.db.models import Q
 
-# Importar modelos y forms
-from .models import Institucion, Dimension, Pregunta
-from .forms import InstitucionForm, DimensionForm, PreguntaForm
-
-def es_admin(user):
-    return user.is_authenticated and user.rol == 'ADMIN'
 
 # =======================================================
 # 1. GESTIÓN DE INSTITUCIONES
