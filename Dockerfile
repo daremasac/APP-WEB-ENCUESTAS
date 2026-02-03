@@ -1,16 +1,16 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Instalar dependencias del sistema para MySQL
-RUN apt-get update && apt-get install -y \
+# Instalar dependencias del sistema para MySQL en Alpine
+RUN apk add --no-cache \
     gcc \
-    default-libmysqlclient-dev \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    musl-dev \
+    mariadb-connector-c-dev \
+    pkgconfig
 
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
