@@ -166,3 +166,5 @@ CSRF_TRUSTED_ORIGINS = [
     'https://encuestas.ateneagroup.pe',
     'http://encuestas.ateneagroup.pe',
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
