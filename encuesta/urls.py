@@ -28,7 +28,7 @@ handler404 = 'apps.usuarios.views.error_404_view'
 handler403 = 'apps.usuarios.views.error_403_view'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     # 1. Ruta Raíz (El Semáforo)
     path('', home, name='home'),
     

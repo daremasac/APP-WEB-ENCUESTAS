@@ -10,11 +10,11 @@ urlpatterns = [
     path('perfil/', editar_perfil, name='editar_perfil'),
 
     # crud de usuarios para admin
-    path('usuarios/', lista_usuarios, name='lista_usuarios'),
-    path('usuarios/crear/', gestionar_usuario, name='crear_usuario'),
-    path('usuarios/editar/<int:pk>/', gestionar_usuario, name='editar_usuario'),
-    path('usuarios/eliminar/<int:pk>/', eliminar_usuario, name='eliminar_usuario'),
-    path('usuarios/detalle/<int:pk>/', detalle_usuario, name='detalle_usuario'),
+    path('lista/', lista_usuarios, name='lista_usuarios'),
+    path('crear/', gestionar_usuario, name='crear_usuario'),
+    path('editar/<int:pk>/', gestionar_usuario, name='editar_usuario'),
+    path('eliminar/<int:pk>/', eliminar_usuario, name='eliminar_usuario'),
+    path('detalle/<int:pk>/', detalle_usuario, name='detalle_usuario'),
 
 # --- ZONA SUPERVISOR (Mi Equipo) ---
     path('mi-equipo/', listar_mi_equipo, name='listar_mi_equipo'),

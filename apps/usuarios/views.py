@@ -192,7 +192,7 @@ def eliminar_usuario(request, pk):
     if usuario == request.user:
         messages.error(request, "No puedes eliminar tu propia cuenta.")
     else:
-        usuario.delete() # O usuario.is_active = False para borrado lógico
+        usuario.is_active = False 
         messages.success(request, "Usuario eliminado correctamente.")
     
     return redirect('lista_usuarios')
