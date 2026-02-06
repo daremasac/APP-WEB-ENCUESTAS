@@ -172,15 +172,15 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'darema.tech@gmail.com' # Tu correo de Gmail
 EMAIL_HOST_PASSWORD = 'lwkh udbz plfw nmwa'  # Tu contraseña de aplicación de Gmail
-DEFAULT_FROM_EMAIL = '"Soporte DaremaTechnology S.A.C." <darema.tech@gmail.com>'
+DEFAULT_FROM_EMAIL = '"Soporte Grupo Inkillay" <darema.tech@gmail.com>'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
-    'https://encuestas.ateneagroup.pe',
-    'http://encuestas.ateneagroup.pe',
+    'https://sigers.grupoinkillay.com',
+    'http://sigers.grupoinkillay.com',
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
