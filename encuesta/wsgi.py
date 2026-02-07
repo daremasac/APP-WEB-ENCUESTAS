@@ -8,6 +8,16 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
 """
 
 import os
+import sys
+
+# --- PARCHE DE COMPATIBILIDAD ---
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+    import MySQLdb
+    MySQLdb.version_info = (2, 2, 1, "final", 0)
+except ImportError:
+    pass
 
 from django.core.wsgi import get_wsgi_application
 
