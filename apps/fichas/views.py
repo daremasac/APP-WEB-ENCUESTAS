@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
-from .models import FichaEvaluacion, FamiliarDelEvaluado, FichaDetalle, Pregunta, Opcion, Dimension, Institucion
+from .models import FichaEvaluacion, FamiliarDelEvaluado, FichaDetalle, Pregunta, Opcion, Dimension, Institucion, FichaHistorial
 from apps.ubigeo.models import Departamento
 from datetime import timedelta
 from django.utils import timezone
@@ -20,6 +20,12 @@ from django.db.models import Q
 # Importar modelos y forms
 from .models import Institucion, Dimension, Pregunta
 from .forms import InstitucionForm, DimensionForm, PreguntaForm
+
+from django.utils import timezone
+from datetime import timedelta
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from django.http import HttpResponse
 
 def es_admin(user):
     return user.is_authenticated and user.rol == 'ADMIN'
@@ -197,8 +203,7 @@ def ver_ficha(request, ficha_id):
     # 2. Obtener familiares
     familiares = ficha.familiares.all()
 
-    # 3. Obtener respuestas detalladas
-    # Traemos la pregunta y la dimensión de golpe para no hacer 100 consultas
+    ficha_historial = FichaHistorial.objects.filter(ficha=ficha).order_by('-fecha_edicion')
     respuestas = FichaDetalle.objects.filter(ficha=ficha).select_related(
         'pregunta', 
         'pregunta__dimension', 
@@ -208,14 +213,142 @@ def ver_ficha(request, ficha_id):
     return render(request, 'fichas/ver_ficha.html', {
         'ficha': ficha,
         'familiares': familiares,
-        'respuestas': respuestas
+        'respuestas': respuestas,
+        'ficha_historial': ficha_historial
     })
 
-from django.utils import timezone
-from datetime import timedelta
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from django.http import HttpResponse
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import FichaEvaluacion
+
+from .models import FichaEvaluacion, Institucion # Importamos Institucion
+
+@login_required
+def listar_mis_fichas(request):
+    # 1. Obtener parámetros de búsqueda
+    # Usamos el ID de la institución para una búsqueda más precisa
+    inst_id = request.GET.get('institucion_id', '') 
+    search_dni = request.GET.get('dni', '')
+
+    # 2. Queryset base
+    queryset = FichaEvaluacion.objects.all().select_related('institucion').order_by('-fecha_registro')
+
+    # 3. Aplicar filtros
+    if inst_id:
+        queryset = queryset.filter(institucion_id=inst_id)
+    
+    if search_dni:
+        queryset = queryset.filter(dni_evaluado__icontains=search_dni)
+
+    # 4. Traer todas las instituciones para el combo
+    instituciones = Institucion.objects.all().order_by('nombre')
+
+    # 5. Paginación
+    paginator = Paginator(queryset, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'fichas/listar_fichas.html', {
+        'fichas': page_obj,
+        'instituciones': instituciones, # Enviamos la lista de instituciones
+        'inst_id': inst_id,             # Enviamos el ID seleccionado para mantenerlo en el combo
+        'search_dni': search_dni,
+    })
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import FichaEvaluacion, FichaHistorial
+from .forms import FichaEvaluacionForm
+
+@login_required
+def editar_ficha(request, ficha_id):
+    # 1. Traemos la ficha original de la DB
+    ficha = get_object_or_404(FichaEvaluacion, id=ficha_id)
+    dimensiones = Dimension.objects.prefetch_related('preguntas__opciones').all().order_by('orden')
+    
+    # 2. Diccionario de respuestas actuales para auditar preguntas
+    detalles_actuales = {
+        d.pregunta_id: d.opcion_seleccionada.texto 
+        for d in ficha.detalles.select_related('opcion_seleccionada').all()
+    }
+
+    if request.method == 'POST':
+        form = FichaEvaluacionForm(request.POST, instance=ficha)
+        
+        if form.is_valid():
+            cambios_detectados = []
+
+            # --- CORRECCIÓN DE AUDITORÍA DE CABECERA ---
+            # Obtenemos una copia "congelada" de la ficha tal como está en la DB
+            ficha_original = FichaEvaluacion.objects.get(pk=ficha.pk)
+
+            for campo in form.changed_data:
+                # Sacamos el valor de la copia que NO ha sido tocada por el formulario
+                valor_antiguo = getattr(ficha_original, campo)
+                valor_nuevo = form.cleaned_data.get(campo)
+                
+                # Solo registramos si realmente son diferentes (evita ruidos)
+                if valor_antiguo != valor_nuevo:
+                    cambios_detectados.append(f"Campo {campo}: '{valor_antiguo}' ➔ '{valor_nuevo}'")
+
+            # Ahora sí, preparamos el guardado
+            ficha = form.save(commit=False)
+            nuevo_puntaje_total = 0
+
+            # --- AUDITORÍA DE PREGUNTAS (MINUCIOSA) ---
+            for key, value in request.POST.items():
+                if key.startswith('pregunta_'):
+                    id_pregunta = int(key.split('_')[1])
+                    id_opcion_nueva = int(value)
+                    
+                    pregunta_obj = Pregunta.objects.get(id=id_pregunta)
+                    opcion_nueva_obj = Opcion.objects.get(id=id_opcion_nueva)
+                    
+                    texto_anterior = detalles_actuales.get(id_pregunta, "Sin respuesta")
+                    texto_nuevo = opcion_nueva_obj.texto
+
+                    if texto_anterior != texto_nuevo:
+                        cambios_detectados.append(
+                            f"Pregunta {pregunta_obj.orden}: '{texto_anterior}' ➔ '{texto_nuevo}'"
+                        )
+                    
+                    FichaDetalle.objects.update_or_create(
+                        ficha=ficha, pregunta=pregunta_obj,
+                        defaults={
+                            'opcion_seleccionada': opcion_nueva_obj,
+                            'puntaje_obtenido': opcion_nueva_obj.puntaje
+                        }
+                    )
+                    nuevo_puntaje_total += opcion_nueva_obj.puntaje
+            
+            ficha.puntaje_total = nuevo_puntaje_total
+            ficha.save()
+
+            # 3. Guardar Auditoría solo si hubo cambios reales
+            if cambios_detectados:
+                FichaHistorial.objects.create(
+                    ficha=ficha,
+                    usuario=request.user,
+                    accion="Edición de Ficha",
+                    detalles="\n".join(cambios_detectados)
+                )
+            
+            return redirect('listar_fichas')
+    else:
+        form = FichaEvaluacionForm(instance=ficha)
+    respuestas_ids = list(ficha.detalles.values_list('opcion_seleccionada_id', flat=True))
+    return render(request, 'fichas/editar_ficha.html', {
+        'form': form,
+        'ficha': ficha,
+        'dimensiones': dimensiones,
+        'respuestas_ids': respuestas_ids,
+        # 'respuestas_actuales': {k: v for k, v in ficha.detalles.values_list('pregunta_id', 'opcion_seleccionada_id')}
+    })
+
+
+
 
 @login_required
 def exportar_excel(request):

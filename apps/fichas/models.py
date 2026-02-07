@@ -72,7 +72,7 @@ class FichaEvaluacion(models.Model):
         settings.AUTH_USER_MODEL, 
         on_delete=models.PROTECT, 
         related_name='fichas_realizadas',
-        verbose_name='Encuestador'
+        verbose_name='Agente_de_campo'
     )
     institucion = models.ForeignKey(Institucion, on_delete=models.PROTECT, verbose_name='Institución Evaluada')
     fecha_registro = models.DateTimeField('Fecha de Aplicación', auto_now_add=True)
@@ -122,6 +122,30 @@ class FichaEvaluacion(models.Model):
 
     def __str__(self):
         return f"Ficha {self.id}: {self.nombres_evaluado} {self.apellidos_evaluado}"
+    
+
+from django.db import models
+from django.conf import settings
+
+# ... tus otros modelos (Institucion, etc.)
+
+class FichaHistorial(models.Model):
+    """
+    Registra cada edición realizada en una ficha para fines de auditoría.
+    """
+    ficha = models.ForeignKey(FichaEvaluacion, on_delete=models.CASCADE, related_name='historial_cambios')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    fecha_edicion = models.DateTimeField(auto_now_add=True)
+    accion = models.CharField(max_length=255, default="Edición de datos")
+    
+    # Cambia help_count por help_text
+    detalles = models.TextField(blank=True, help_text="Ej: Cambió el nivel de riesgo de Bajo a Alto")
+
+    class Meta:
+        ordering = ['-fecha_edicion']
+
+    def __str__(self):
+        return f"{self.usuario.username} editó la ficha {self.ficha.id} el {self.fecha_edicion}"
 
 # =======================================================
 # PARTE 3: DETALLES DE LA FICHA
@@ -144,6 +168,8 @@ class FamiliarDelEvaluado(models.Model):
 
     def __str__(self):
         return f"{self.nombres} ({self.parentesco})"
+
+
 
 class FichaDetalle(models.Model):
     """

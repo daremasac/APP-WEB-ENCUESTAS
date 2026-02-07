@@ -29,7 +29,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             background-color: #F3F4F6;
             font-family: 'Inter', sans-serif;
@@ -37,15 +37,17 @@
 
         /* CLASE ACTIVA: Fondo azul claro, texto azul fuerte, borde derecho */
         .sidebar-active {
-            background-color: #EFF6FF; /* brand-50 */
-            color: #0284c7; /* brand-600 */
+            background-color: #EFF6FF;
+            /* brand-50 */
+            color: #0284c7;
+            /* brand-600 */
             font-weight: 600;
             border-right: 4px solid #0284c7;
         }
-        
+
         /* Icono activo */
         .sidebar-active svg {
-            color: #0284c7; 
+            color: #0284c7;
         }
 
         .sidebar-item:hover:not(.sidebar-active) {
@@ -54,51 +56,127 @@
         }
 
         @media print {
-            aside, nav, header, footer, .no-print { display: none !important; }
-            body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: white !important; overflow: visible !important; }
-            body > div, main { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-            .max-w-5xl, .container, .mx-auto { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 10mm !important; }
-            body { font-size: 10pt !important; line-height: 1.3; }
-            h1 { font-size: 16pt !important; margin-bottom: 10px !important; }
-            h2 { font-size: 14pt !important; margin-bottom: 8px !important; }
-            h3 { font-size: 11pt !important; margin-top: 10px !important; }
-            table th, table td { padding: 4px 8px !important; font-size: 9pt !important; height: auto !important; }
-            .divide-y > div { padding-top: 4px !important; padding-bottom: 4px !important; }
-            section, .rounded-xl, .bg-white { border: 1px solid #ccc !important; border-radius: 4px !important; box-shadow: none !important; margin-bottom: 15px !important; break-inside: avoid !important; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .text-gray-500, .text-gray-400 { color: #666 !important; }
+
+            aside,
+            nav,
+            header,
+            footer,
+            .no-print {
+                display: none !important;
+            }
+
+            body,
+            html {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                background-color: white !important;
+                overflow: visible !important;
+            }
+
+            body>div,
+            main {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .max-w-5xl,
+            .container,
+            .mx-auto {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 10mm !important;
+            }
+
+            body {
+                font-size: 10pt !important;
+                line-height: 1.3;
+            }
+
+            h1 {
+                font-size: 16pt !important;
+                margin-bottom: 10px !important;
+            }
+
+            h2 {
+                font-size: 14pt !important;
+                margin-bottom: 8px !important;
+            }
+
+            h3 {
+                font-size: 11pt !important;
+                margin-top: 10px !important;
+            }
+
+            table th,
+            table td {
+                padding: 4px 8px !important;
+                font-size: 9pt !important;
+                height: auto !important;
+            }
+
+            .divide-y>div {
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+            }
+
+            section,
+            .rounded-xl,
+            .bg-white {
+                border: 1px solid #ccc !important;
+                border-radius: 4px !important;
+                box-shadow: none !important;
+                margin-bottom: 15px !important;
+                break-inside: avoid !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .text-gray-500,
+            .text-gray-400 {
+                color: #666 !important;
+            }
         }
     </style>
 </head>
 
 <body class="bg-gray-50">
 
-    {% url 'lista_usuarios' as url_admin_dashboard %}
+    {% url 'dashboard_admin' as url_admin_dashboard %}
     {% url 'lista_usuarios' as url_admin_list %}
-    
+
     {% url 'lista_instituciones' as url_config_instituciones %}
     {% url 'lista_banco_preguntas' as url_config_banco %}
 
     {% url 'listar_mi_equipo' as url_supervisor %}
     {% url 'mis_encuestas' as url_encuestador %}
-    {% url 'lista_usuarios' as url_home %}
+    {% url 'dashboard_admin' as url_home %}
 
     <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
-                
+
                 <div class="flex items-center justify-start rtl:justify-end">
                     <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
                         aria-controls="logo-sidebar" type="button"
                         class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
                         <span class="sr-only">Abrir menú</span>
                         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+                            <path clip-rule="evenodd" fill-rule="evenodd"
+                                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                            </path>
                         </svg>
                     </button>
-                    
+
                     <a href="{{ url_home }}" class="flex ms-2 md:me-24 items-center gap-2 group">
-                        <div class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md transition group-hover:bg-brand-700">
+                        <div
+                            class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md transition group-hover:bg-brand-700">
                             FS
                         </div>
                         <span class="self-center text-xl font-bold whitespace-nowrap text-gray-800 tracking-tight">
@@ -121,17 +199,20 @@
                                 src="https://ui-avatars.com/api/?name={{ user.nombres }}+{{ user.apellidos }}&background=0284c7&color=fff&bold=true"
                                 alt="user photo">
                         </button>
-                        
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg border border-gray-100" id="dropdown-user">
+
+                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg border border-gray-100"
+                            id="dropdown-user">
                             <div class="px-4 py-3 md:hidden" role="none">
-                                <p class="text-sm text-gray-900 font-bold" role="none">{{ user.nombres }} {{ user.apellidos }}</p>
+                                <p class="text-sm text-gray-900 font-bold" role="none">{{ user.nombres }} {{
+                                    user.apellidos }}</p>
                                 <p class="text-sm font-medium text-gray-500 truncate" role="none">{{ user.email }}</p>
                             </div>
                             <ul class="py-1" role="none">
                                 <li>
                                     <form action="{% url 'logout' %}" method="POST" class="block">
                                         {% csrf_token %}
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
+                                        <button type="submit"
+                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
                                             Cerrar Sesión
                                         </button>
                                     </form>
@@ -148,119 +229,159 @@
     <aside id="logo-sidebar"
         class=" fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] no-print"
         aria-label="Sidebar">
-        
+
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col justify-between ">
             <ul class="space-y-1 font-medium text-sm">
 
                 <li>
                     {% if user.rol == 'ADMIN' %}
-                        <a href="{{ url_admin_dashboard }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
+                    <a href="{{ url_admin_dashboard }}"
+                        class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
                            {% if request.path == url_admin_dashboard %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% elif user.rol == 'SUPERVISOR' %}
-                        <a href="{{ url_supervisor }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
+                        {% elif user.rol == 'SUPERVISOR' %}
+                        <a href="{{ url_supervisor }}" class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
                            {% if request.path == url_supervisor %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% else %}
-                        <a href="{{ url_encuestador }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
+                            {% else %}
+                            <a href="{{ url_encuestador }}" class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
                            {% if request.path == url_encuestador %}sidebar-active{% else %}text-gray-600{% endif %}">
-                    {% endif %}
-                        
-                        <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" 
-                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                            <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                            <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                        </svg>
-                        
-                        <span class="ms-3">
-                            {% if user.rol == 'ADMIN' %}Panel General
-                            {% elif user.rol == 'SUPERVISOR' %}Mi Equipo (Inicio)
-                            {% else %}Mis Encuestas{% endif %}
-                        </span>
-                    </a>
+                                {% endif %}
+
+                                <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900"
+                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                    viewBox="0 0 22 21">
+                                    <path
+                                        d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
+                                    <path
+                                        d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
+                                </svg>
+
+                                <span class="ms-3">
+                                    {% if user.rol == 'ADMIN' %}Panel General
+                                    {% elif user.rol == 'SUPERVISOR' %}Mi Equipo (Inicio)
+                                    {% else %}Mis Encuestas{% endif %}
+                                </span>
+                            </a>
                 </li>
 
                 <li class="my-4 border-t border-gray-100"></li>
 
                 {% if user.rol == 'ADMIN' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</div>
-                    </li>
-                    <li>
-                        <a href="{{ url_admin_list }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
+                <li>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración
+                    </div>
+                </li>
+                <li>
+                    <a href="{{ url_admin_list }}"
+                        class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
                            {% if '/usuarios/' in request.path and '/mi-equipo/' not in request.path and '/' not in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                            
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                            </svg>
-                            <span class="ms-3">Usuarios del Sistema</span>
-                        </a>
-                    </li>
 
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">Configuración</div>
-                    </li>
-                    <li>
-                        <a href="{{ url_config_instituciones }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
+                        <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            viewBox="0 0 20 18">
+                            <path
+                                d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
+                        </svg>
+                        <span class="ms-3">Usuarios del Sistema</span>
+                    </a>
+                </li>
+
+                <li>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                        Configuración</div>
+                </li>
+                <li>
+                    <a href="{{ url_config_instituciones }}"
+                        class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
                            {% if '/config/instituciones/' in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            <span class="ms-3">Instituciones</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_config_banco }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
+                        <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <span class="ms-3">Instituciones</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_config_banco }}"
+                        class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
                            {% if '/config/banco/' in request.path or '/config/dimension/' in request.path or '/config/pregunta/' in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                            <span class="ms-3">Banco de Preguntas</span>
-                        </a>
-                    </li>
+                        <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span class="ms-3">Banco de Preguntas</span>
+                    </a>
+                </li>
                 {% endif %}
 
                 {% if user.rol == 'SUPERVISOR' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Supervisión</div>
-                    </li>
-                    <li>
-                        <a href="{{ url_supervisor }}"
-                           class="flex items-center p-3 rounded-lg sidebar-item hover:bg-gray-100 group
-                           {% if '/mi-equipo/' in request.path %}sidebar-active{% else %}text-gray-600{% endif %}">
-                            
-                            <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                            </svg>
-                            <span class="ms-3">Gestión de Equipo</span>
-                        </a>
-                    </li>
+                <li>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Supervisión
+                    </div>
+                </li>
+
+                <li>
+                    <a href="{{ url_supervisor }}"
+                        class="flex items-center p-3 rounded-lg group transition duration-150
+           {% if '/mi-equipo/' in request.path %} bg-indigo-50 text-indigo-700 font-bold {% else %} text-gray-600 hover:bg-gray-100 {% endif %}">
+
+                        <svg class="w-5 h-5 transition duration-75 {% if '/mi-equipo/' in request.path %} text-indigo-600 {% else %} text-gray-400 group-hover:text-gray-900 {% endif %}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        <span class="ms-3">Gestión de Equipo</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'listar_fichas' %}"
+                        class="flex items-center p-3 rounded-lg group transition duration-150
+                        {% if '/mis-fichas/' in request.path or '/ver-ficha/' in request.path %} bg-indigo-50 text-indigo-700 font-bold {% else %} text-gray-600 hover:bg-gray-100 {% endif %}">
+
+                        <svg class="w-5 h-5 transition duration-75 {% if '/mis-fichas/' in request.path %} text-indigo-600 {% else %} text-gray-400 group-hover:text-gray-900 {% endif %}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path d="M7 2a2 2 0 00-2 2v1h10V4a2 2 0 00-2-2H7zM5 5V3a3 3 0 013-3h4a3 3 0 013 3v2H5z" />
+                            <path
+                                d="M4 6h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm2 4a1 1 0 100 2h8a1 1 0 100-2H6z" />
+                        </svg>
+                        <span class="ms-3">Fichas Socio Familiar</span>
+                    </a>
+                </li>
                 {% endif %}
 
                 {% if user.rol == 'ENCUESTADOR' %}
-                    <li>
-                        <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Campo</div>
-                    </li>
-                    <li>
-                        <a href="{% url 'registrar_ficha' %}"
-                           class="flex items-center p-3 rounded-lg hover:bg-blue-50 group border border-dashed border-gray-300 hover:border-blue-400 hover:text-blue-700 transition-all 
+                <li>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Campo</div>
+                </li>
+                <li>
+                    <a href="{% url 'registrar_ficha' %}"
+                        class="flex items-center p-3 rounded-lg hover:bg-blue-50 group border border-dashed border-gray-300 hover:border-blue-400 hover:text-blue-700 transition-all 
                            {% if '/nueva/' in request.path %}bg-blue-50 border-blue-400 text-blue-700 font-bold shadow-sm{% else %}text-gray-900{% endif %}">
-                            
-                            <svg class="w-5 h-5 transition duration-75 {% if '/nueva/' in request.path %}text-blue-600{% else %}text-gray-500 group-hover:text-blue-600{% endif %}" 
-                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            <span class="ms-3 font-medium">Nueva Atención</span>
-                        </a>
-                    </li>
+
+                        <svg class="w-5 h-5 transition duration-75 {% if '/nueva/' in request.path %}text-blue-600{% else %}text-gray-500 group-hover:text-blue-600{% endif %}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span class="ms-3 font-medium">Nueva Atención</span>
+                    </a>
+                </li>
                 {% endif %}
 
             </ul>
 
             <div class="mt-auto pt-6 border-t border-gray-100">
-                <a href="#" class="flex items-center p-3 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100 group transition-colors">
-                    <svg class="w-5 h-5 text-gray-400 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <a href="#"
+                    class="flex items-center p-3 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100 group transition-colors">
+                    <svg class="w-5 h-5 text-gray-400 transition duration-75 group-hover:text-gray-900"
+                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span class="ms-3">Soporte / Ayuda</span>
                 </a>
@@ -273,23 +394,30 @@
     <div class="p-0 md:p-4 {% if user.rol != 'ENCUESTADOR' %}sm:ml-64{% endif %}">
         <div class="p-[5px] md:p-4  mt-[20px] md:mt-14 max-w-7xl mx-auto">
             {% if messages %}
-                {% for message in messages %}
-                <div id="alert-{{ forloop.counter }}" class="flex items-center p-4 mb-4 rounded-lg shadow-sm border
-                    {% if message.tags == 'success' %}text-green-800 border-green-200 bg-green-50{% elif message.tags == 'error' %}text-red-800 border-red-200 bg-red-50{% else %}text-blue-800 border-blue-200 bg-blue-50{% endif %}" role="alert">
-                    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            {% for message in messages %}
+            <div id="alert-{{ forloop.counter }}"
+                class="flex items-center p-4 mb-4 rounded-lg shadow-sm border
+                    {% if message.tags == 'success' %}text-green-800 border-green-200 bg-green-50{% elif message.tags == 'error' %}text-red-800 border-red-200 bg-red-50{% else %}text-blue-800 border-blue-200 bg-blue-50{% endif %}"
+                role="alert">
+                <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <div class="ms-3 text-sm font-medium">{{ message }}</div>
+                <button type="button"
+                    class="ms-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex items-center justify-center h-8 w-8
+                        {% if message.tags == 'success' %}bg-green-50 text-green-500 focus:ring-green-400 hover:bg-green-200{% else %}bg-blue-50 text-blue-500 focus:ring-blue-400 hover:bg-blue-200{% endif %}"
+                    data-dismiss-target="#alert-{{ forloop.counter }}" aria-label="Close">
+                    <span class="sr-only">Cerrar</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                     </svg>
-                    <div class="ms-3 text-sm font-medium">{{ message }}</div>
-                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex items-center justify-center h-8 w-8
-                        {% if message.tags == 'success' %}bg-green-50 text-green-500 focus:ring-green-400 hover:bg-green-200{% else %}bg-blue-50 text-blue-500 focus:ring-blue-400 hover:bg-blue-200{% endif %}" 
-                        data-dismiss-target="#alert-{{ forloop.counter }}" aria-label="Close">
-                        <span class="sr-only">Cerrar</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                    </button>
-                </div>
-                {% endfor %}
+                </button>
+            </div>
+            {% endfor %}
             {% endif %}
 
             {% block content %}{% endblock %}
@@ -300,4 +428,5 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

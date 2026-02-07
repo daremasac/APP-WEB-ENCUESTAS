@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load dict_utils %}
+{% block content %}
+<form method="POST" class="max-w-5xl mx-auto py-10 px-4 sm:px-6">
+    {% csrf_token %}
+
+   <div class="sticky top-0 z-50 bg-gray-50/95 backdrop-blur-sm py-4 mb-8 border-b border-gray-200">
+    <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-6">
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <span class="hidden md:inline">✏️</span> Editando Expediente N° {{ ficha.id }}
+            </h1>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'listar_fichas' %}" 
+               class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs md:text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm font-medium">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold text-xs md:text-sm hover:bg-indigo-700 shadow-md transition-all active:scale-95">
+                Guardar Cambios
+            </button>
+        </div>
+    </div>
+</div>
+
+    <div class="space-y-8">
+        <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                <h3 class="font-bold text-gray-800 uppercase text-xs">1. Datos Personales y Cabecera</h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% for field in form %}
+                    <div class="{% if field.name == 'direccion_domicilio' or field.name == 'observaciones_familia' %}md:col-span-2{% else %}md:col-span-1{% endif %}">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- prueba -->
+         
+        <!-- end prueba -->
+
+        {% for dimension in dimensiones %}
+        <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-indigo-600 px-6 py-3 border-b border-indigo-700">
+                <h3 class="font-bold text-white uppercase text-xs">{{ dimension.nombre }}</h3>
+            </div>
+            <div class="divide-y divide-gray-100">
+                {% for pregunta in dimension.preguntas.all %}
+                <div class="px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4 hover:bg-gray-50">
+                    <div class="flex gap-3 md:w-2/3 text-[12px] md:text-sm">
+                        <span class="font-bold text-gray-400">{{ pregunta.orden }}.</span>
+                        <p class="text-gray-700 font-medium">{{ pregunta.enunciado }}</p>
+                    </div>
+                    <div class="w-full md:w-1/3">
+                    <select name="pregunta_{{ pregunta.id }}" 
+                            class="w-full text-xs md:text-sm rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 font-semibold text-indigo-700 py-2 transition-all">
+                        <option value="">Seleccione una opción...</option>
+                        {% for opcion in pregunta.opciones.all %}
+                            <option value="{{ opcion.id }}" 
+                                    data-pts="{{ opcion.puntaje }}"
+                                    {% if opcion.id in respuestas_ids %}selected{% endif %}>
+                                {{ opcion.texto }} 
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+</form>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const depSelect = document.getElementById('id_ubigeo_departamento');
+    const provSelect = document.getElementById('id_ubigeo_provincia');
+    const distSelect = document.getElementById('id_ubigeo_distrito');
+
+    // Cambiar Provincias al elegir Departamento
+    depSelect.addEventListener('change', function() {
+        const depId = this.value;
+        provSelect.innerHTML = '<option value="">Cargando...</option>';
+        distSelect.innerHTML = '<option value="">-- Primero provincia --</option>';
+        
+        if (!depId) return;
+
+        fetch(`/ubigeo/api/provincias/?dep_id=${depId}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '<option value="">-- Seleccione Provincia --</option>';
+                data.forEach(item => {
+                    html += `<option value="${item.id}">${item.nombre}</option>`;
+                });
+                provSelect.innerHTML = html;
+                provSelect.disabled = false;
+            });
+    });
+
+    // Cambiar Distritos al elegir Provincia
+    provSelect.addEventListener('change', function() {
+        const provId = this.value;
+        distSelect.innerHTML = '<option value="">Cargando...</option>';
+        
+        if (!provId) return;
+
+        fetch(`/ubigeo/api/distritos/?prov_id=${provId}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '<option value="">-- Seleccione Distrito --</option>';
+                data.forEach(item => {
+                    html += `<option value="${item.id}">${item.nombre}</option>`;
+                });
+                distSelect.innerHTML = html;
+                distSelect.disabled = false;
+            });
+    });
+});
+</script>
+
+{% endblock %}

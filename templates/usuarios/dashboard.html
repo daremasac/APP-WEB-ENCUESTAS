@@ -26,13 +26,7 @@
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
                 </button>
-                <a href="{% url 'crear_usuario' %}"
-                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 flex items-center gap-2 hover:scale-105">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Registrar Usuario
-                </a>
+                
             </div>
         </div>
     </div>
@@ -108,7 +102,7 @@
         <div class="group bg-white hover:bg-gradient-to-br hover:from-emerald-50 hover:to-teal-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Encuestadores</p>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Agente de campo</p>
                     <p class="text-4xl font-black text-gray-800 mt-2">{{ kpi_encuestadores }}</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-1">Activos</p>
                 </div>
@@ -132,8 +126,8 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500 font-semibold">Esta Semana</p>
-                <p class="text-2xl font-black text-gray-800">{{ kpi_semana }}</p>
+                <p class="text-xs text-gray-500 font-semibold">Puntaje más alto de Fichas</p>
+                <p class="text-2xl font-black text-gray-800">{{ kpi_puntaje_mas_alto }}</p>
             </div>
         </div>
 
@@ -144,8 +138,8 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500 font-semibold">Pendientes</p>
-                <p class="text-2xl font-black text-gray-800">{{ kpi_pendientes }}</p>
+                <p class="text-xs text-gray-500 font-semibold">Puntaje más bajo de Fichas</p>
+                <p class="text-2xl font-black text-gray-800">{{ kpi_puntaje_mas_bajo }}</p>
             </div>
         </div>
 
@@ -157,7 +151,7 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500 font-semibold">Puntaje Promedio</p>
+                <p class="text-xs text-gray-500 font-semibold">Puntaje Promedio de resultados de fichas</p>
                 <p class="text-2xl font-black text-gray-800">{{ kpi_puntaje_promedio }}</p>
             </div>
         </div>
@@ -172,7 +166,7 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-black text-gray-800 text-lg flex items-center gap-2">
                     <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
-                    Tendencia Últimos 7 Días
+                    Actividades los Últimos 7 Días
                 </h3>
                 <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">
                     Actividad Diaria
@@ -186,7 +180,7 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-black text-gray-800 text-lg flex items-center gap-2">
                     <div class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
-                    Distribución de Riesgo Social
+                    Distribución de Riesgo Fichas Socio Familiar
                 </h3>
                 <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold">
                     {{ kpi_total_fichas }} casos
@@ -197,38 +191,7 @@
 
     </div>
 
-    <!-- CHARTS ROW 2 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Productividad Supervisores -->
-        <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-200">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-black text-gray-800 text-lg flex items-center gap-2">
-                    <div class="w-1 h-6 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
-                    Productividad por Supervisores
-                </h3>
-                <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">
-                    Total vs Este Mes
-                </span>
-            </div>
-            <canvas id="chartSupervisores" height="280"></canvas>
-        </div>
-
-        <!-- Análisis por Dimensiones -->
-        <div class="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-200">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-black text-gray-800 text-lg flex items-center gap-2">
-                    <div class="w-1 h-6 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full"></div>
-                    Puntaje Promedio por Dimensión
-                </h3>
-                <span class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-bold">
-                    Análisis Global
-                </span>
-            </div>
-            <canvas id="chartDimensiones" height="280"></canvas>
-        </div>
-
-    </div>
+    
 
     <!-- TABLES ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -240,7 +203,7 @@
                     <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                     </svg>
-                    Top 5 Encuestadores
+                    Top 5 Agente de campo con mayor cantidad de Fichas Registradas
                 </h3>
             </div>
             <div class="p-6">
@@ -283,12 +246,12 @@
                     {% for inst in top_instituciones %}
                     <div class="p-3 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors">
                         <div class="flex items-center justify-between mb-2">
-                            <p class="font-bold text-gray-800 text-sm">{{ inst.institucion__nombre|truncatechars:40 }}</p>
+                            <p class="font-bold text-gray-800 text-sm">{{ inst.nombre|truncatechars:40 }}</p>
                             <span class="text-2xl font-black text-purple-600">{{ inst.total }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-md font-mono">
-                                {{ inst.institucion__codigo_modular }}
+                                {{ inst.codigo_modular }}
                             </span>
                             {% if inst.casos_riesgo > 0 %}
                             <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-md font-semibold">
@@ -326,7 +289,7 @@
                     <tr>
                         <th class="px-6 py-3 font-bold text-left">Evaluado</th>
                         <th class="px-6 py-3 font-bold text-left">Institución</th>
-                        <th class="px-6 py-3 font-bold text-left">Encuestador</th>
+                        <th class="px-6 py-3 font-bold text-left">Agente de campo</th>
                         <th class="px-6 py-3 font-bold text-center">Riesgo</th>
                         <th class="px-6 py-3 font-bold text-left">Fecha</th>
                     </tr>
@@ -385,5 +348,37 @@
 
 <!-- CHARTS SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gráfico de Línea: Tendencia Semanal
+    new Chart(document.getElementById('chartTendencia'), {
+        type: 'line',
+        data: {
+            labels: {{ labels_tendencia|safe }},
+            datasets: [{
+                label: 'Fichas Registradas',
+                data: {{ data_tendencia|safe }},
+                borderColor: '#4f46e5',
+                tension: 0.4,
+                fill: true,
+                backgroundColor: 'rgba(79, 70, 229, 0.1)'
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Gráfico de Dona: Distribución de Riesgo
+    new Chart(document.getElementById('chartRiesgos'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ riesgos_labels|safe }},
+            datasets: [{
+                data: {{ riesgos_data|safe }},
+                backgroundColor: ['#10b981','#f59e0b','#3b82f6', '#ef4444'],
+                hoverOffset: 4
+            }]
+        },
+        options: { responsive: true, cutout: '70%' }
+    });
+</script>
 
 {% endblock %}

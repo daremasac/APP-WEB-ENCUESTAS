@@ -8,7 +8,7 @@ class Usuario(AbstractUser):
     ROLES = (
         ('ADMIN', 'Administrador'),
         ('SUPERVISOR', 'Supervisor'),
-        ('ENCUESTADOR', 'Encuestador / Alumno'),
+        ('ENCUESTADOR', 'Agente de campo / Alumno'),
     )
 
     # --- DATOS GENERALES ---

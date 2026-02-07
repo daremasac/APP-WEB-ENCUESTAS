@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Institucion, Dimension, Pregunta, Opcion, 
-    FichaEvaluacion, FamiliarDelEvaluado, FichaDetalle
+    FichaEvaluacion, FamiliarDelEvaluado, FichaDetalle, FichaHistorial
 )
 
 # =======================================================
@@ -172,3 +172,8 @@ class FichaEvaluacionAdmin(admin.ModelAdmin):
             obj.nivel_riesgo
         )
     nivel_riesgo_colored.short_description = 'Nivel de Riesgo'
+
+@admin.register(FichaHistorial)
+class FichaHistorialAdmin(admin.ModelAdmin):
+    list_display = ('ficha', 'usuario', 'fecha_edicion', 'accion')
+    list_filter = ('fecha_edicion', 'usuario')

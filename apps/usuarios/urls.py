@@ -1,12 +1,12 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
-from .views import CustomLoginView, exportar_excel_supervisor, editar_perfil, lista_usuarios,  gestionar_usuario, eliminar_usuario,detalle_usuario,listar_mi_equipo, crear_encuestador_supervisor, editar_encuestador_supervisor,ver_detalle_equipo,eliminar_encuestador_equipo
+from .views import CustomLoginView, exportar_excel_supervisor,dashboard_admin, editar_perfil, lista_usuarios,  gestionar_usuario, eliminar_usuario,detalle_usuario,listar_mi_equipo, crear_encuestador_supervisor, editar_encuestador_supervisor,ver_detalle_equipo,eliminar_encuestador_equipo
 
 urlpatterns = [
     path('', CustomLoginView.as_view(), name='login'), # La raíz es el login
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
-#     path('dashboard-general/', dashboard_admin, name='dashboard_admin'),
+    path('dashboard-general/', dashboard_admin, name='dashboard_admin'),
     path('perfil/', editar_perfil, name='editar_perfil'),
 
     # crud de usuarios para admin

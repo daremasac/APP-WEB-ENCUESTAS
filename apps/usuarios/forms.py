@@ -348,7 +348,7 @@ class EncuestadorForm(UsuarioAdminForm):
                 del self.fields[campo]
         
         # Ajustamos textos para que sean amigables
-        self.fields['codigo'].label = "Código de Alumno/Encuestador"
+        self.fields['codigo'].label = "Código de Alumno/Agente de campo"
         self.fields['institucion_procedencia'].label = "Universidad / Instituto"
 
         self.fields['nombres'].required = True

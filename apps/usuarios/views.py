@@ -42,7 +42,7 @@ def home(request):
         return redirect('listar_mi_equipo')
     
     elif user.rol == 'ADMIN':
-        return redirect('lista_usuarios') # O 'lista_usuarios' según prefieras
+        return redirect('dashboard_admin') # O 'lista_usuarios' según prefieras
     
     # Si por alguna razón no tiene rol, lo mandamos al login o una página neutral
     return redirect('login')
@@ -66,9 +66,101 @@ def es_admin(user):
     return user.is_authenticated and user.rol == 'ADMIN'
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Avg, Q, Sum
+from django.utils import timezone
+from datetime import timedelta
+from apps.fichas.models import FichaEvaluacion, Institucion, Pregunta, Dimension
+from django.contrib.auth import get_user_model
+
+from django.db.models import Max, Min
+
+
+User = get_user_model()
+
 @user_passes_test(es_admin)
 def dashboard_admin(request):
-    return render(request, 'usuarios/dashboard.html')
+    hoy = timezone.now().date()
+    hace_una_semana = hoy - timedelta(days=7)
+    ayer = hoy - timedelta(days=1)
+
+    # --- KPI CARDS (Métricas Principales) ---
+    kpi_hoy = FichaEvaluacion.objects.filter(fecha_registro__date=hoy).count()
+    kpi_ayer = FichaEvaluacion.objects.filter(fecha_registro__date=ayer).count()
+    
+    # Cálculo de tendencia porcentual
+    if kpi_ayer > 0:
+        cambio_porcentual = round(((kpi_hoy - kpi_ayer) / kpi_ayer) * 100, 1)
+    else:
+        cambio_porcentual = 100 if kpi_hoy > 0 else 0
+
+    kpi_total_fichas = FichaEvaluacion.objects.count()
+    
+    # Casos Críticos: Filtrado por el campo nivel_riesgo de tu modelo
+    kpi_casos_criticos = FichaEvaluacion.objects.filter(
+        Q(nivel_riesgo__icontains='SEVERO') | Q(nivel_riesgo__icontains='CRÍTICO')
+    ).count()
+    
+    kpi_encuestadores = User.objects.filter(fichas_realizadas__isnull=True).distinct().count()
+
+    # --- MÉTRICAS SECUNDARIAS ---
+    kpi_semana = FichaEvaluacion.objects.filter(fecha_registro__date__gte=hace_una_semana).count()
+    kpi_puntaje_promedio = FichaEvaluacion.objects.aggregate(Avg('puntaje_total'))['puntaje_total__avg'] or 0
+    kpi_puntaje_mas_alto = FichaEvaluacion.objects.aggregate(Max('puntaje_total'))['puntaje_total__max'] or 0
+    kpi_puntaje_mas_bajo = FichaEvaluacion.objects.aggregate(Min('puntaje_total'))['puntaje_total__min'] or 0
+    # --- DATOS PARA GRÁFICOS (Chart.js) ---
+    
+    # 1. Tendencia de 7 días
+    labels_tendencia = []
+    data_tendencia = []
+    for i in range(6, -1, -1):
+        dia = hoy - timedelta(days=i)
+        labels_tendencia.append(dia.strftime('%d %b'))
+        data_tendencia.append(FichaEvaluacion.objects.filter(fecha_registro__date=dia).count())
+
+    # 2. Distribución de Riesgos (Pie Chart)
+    riesgos_query = FichaEvaluacion.objects.values('nivel_riesgo').annotate(total=Count('id'))
+    riesgos_labels = [r['nivel_riesgo'] or 'Sin Evaluar' for r in riesgos_query]
+    riesgos_data = [r['total'] for r in riesgos_query]
+
+    # 3. Top 5 Agentes (Basado en tu related_name='fichas_realizadas')
+    top_encuestadores = User.objects.annotate(
+        total_fichas=Count('fichas_realizadas'),
+        fichas_mes=Count('fichas_realizadas', filter=Q(fichas_realizadas__fecha_registro__month=hoy.month))
+    ).order_by('-total_fichas')[:5]
+
+    # 4. Top 5 Instituciones
+    top_instituciones = Institucion.objects.annotate(
+        total=Count('fichaevaluacion'),
+        casos_riesgo=Count('fichaevaluacion', filter=Q(fichaevaluacion__nivel_riesgo__icontains='SEVERO'))
+    ).order_by('-total')[:5]
+
+    # --- ACTIVIDAD RECIENTE ---
+    ultimas_fichas = FichaEvaluacion.objects.select_related(
+        'institucion', 'usuario_registra'
+    ).order_by('-fecha_registro')[:8]
+
+    context = {
+        'kpi_hoy': kpi_hoy,
+        'cambio_porcentual': cambio_porcentual,
+        'kpi_total_fichas': kpi_total_fichas,
+        'kpi_casos_criticos': kpi_casos_criticos,
+        'kpi_encuestadores': kpi_encuestadores,
+        'kpi_semana': kpi_semana,
+        'kpi_puntaje_mas_bajo': kpi_puntaje_mas_bajo,
+        'kpi_puntaje_mas_alto': kpi_puntaje_mas_alto,
+        'kpi_puntaje_promedio': round(kpi_puntaje_promedio, 1),
+        'ultimas_fichas': ultimas_fichas,
+        'top_encuestadores': top_encuestadores,
+        'top_instituciones': top_instituciones,
+        # Listas para JS
+        'labels_tendencia': labels_tendencia,
+        'data_tendencia': data_tendencia,
+        'riesgos_labels': riesgos_labels,
+        'riesgos_data': riesgos_data,
+    }
+    return render(request, 'usuarios/dashboard.html', context)
 
 @login_required
 def editar_perfil(request):
