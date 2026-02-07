@@ -9,14 +9,14 @@ def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'encuesta.settings')
 
     # --- PARCHE PARA MYSQL (PyMySQL) ---
-    try:
-        import pymysql
-        pymysql.install_as_MySQLdb()
-        import MySQLdb
-        # Engañamos a Django con la versión requerida
-        MySQLdb.version_info = (2, 2, 1, "final", 0)
-    except ImportError:
-        pass
+    # try:
+    #     import pymysql
+    #     pymysql.install_as_MySQLdb()
+    #     import MySQLdb
+    #     # Engañamos a Django con la versión requerida
+    #     MySQLdb.version_info = (2, 2, 1, "final", 0)
+    # except ImportError:
+    #     pass
 
     
     try:
