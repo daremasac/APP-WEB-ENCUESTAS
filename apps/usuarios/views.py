@@ -79,7 +79,7 @@ from django.db.models import Max, Min
 
 User = get_user_model()
 
-@user_passes_test(es_supervisor)
+@login_required
 def dashboard_admin(request):
     hoy = timezone.now().date()
   
