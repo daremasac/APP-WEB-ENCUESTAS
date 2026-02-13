@@ -38,7 +38,7 @@
                     {% elif usuario.rol == 'SUPERVISOR' %}
                         <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full border border-indigo-200">SUPERVISOR</span>
                     {% else %}
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">ENCUESTADOR</span>
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">PROFESIONAL</span>
                     {% endif %}
 
                     {% if usuario.is_active %}
@@ -50,23 +50,23 @@
 
                 <div class="mt-6 border-t pt-4 text-left space-y-3 text-sm">
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">DNI / Código</span>
+                        <span class="block text-gray-400  text-xs font-bold">DNI / Código</span>
                         <div class="font-medium text-gray-800">{{ usuario.dni }}</div>
                     </div>
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">Contacto</span>
+                        <span class="block text-gray-400  text-xs font-bold">Contacto</span>
                         <div class="font-medium text-gray-800">{{ usuario.email }}</div>
                         <div class="font-medium text-gray-800">{{ usuario.telefono|default:"-" }}</div>
                     </div>
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">Fecha Registro</span>
+                        <span class="block text-gray-400  text-xs font-bold">Fecha Registro</span>
                         <div class="font-medium text-gray-800">{{ usuario.date_joined|date:"d M, Y" }}</div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="font-bold text-gray-900 border-b pb-2 mb-3 text-sm uppercase">Información Académica</h3>
+                <h3 class="font-bold text-gray-900 border-b pb-2 mb-3 text-sm ">Información Académica</h3>
                 <ul class="space-y-3 text-sm">
                     {% if usuario.rol == 'SUPERVISOR' %}
                         <li><span class="text-gray-500 block text-xs">Profesión:</span><span class="font-medium">{{ usuario.profesion }}</span></li>
@@ -75,7 +75,7 @@
                         <li><span class="text-gray-500 block text-xs">Institución:</span><span class="font-medium">{{ usuario.institucion_procedencia }}</span></li>
                         <li><span class="text-gray-500 block text-xs">Especialidad:</span><span class="font-medium">{{ usuario.especialidad }}</span></li>
                         <li class="grid grid-cols-2 gap-2">
-                            <div><span class="text-gray-500 block text-xs">Ciclo:</span><span class="font-medium">{{ usuario.ciclo|default:"--" }}</span></div>
+                            <div><span class="text-gray-500 block text-xs">CIP:</span><span class="font-medium">{{ usuario.ciclo|default:"--" }}</span></div>
                             <div><span class="text-gray-500 block text-xs">Código:</span><span class="font-medium">{{ usuario.codigo|default:"--" }}</span></div>
                         </li>
                         <li class="pt-2 mt-2 border-t border-gray-100">
@@ -100,23 +100,23 @@
                 
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-                        <div class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Total</div>
+                        <div class="text-gray-400 text-[10px]  font-bold tracking-wider">Total</div>
                         <div class="text-2xl font-black text-gray-800">{{ total_fichas }}</div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-                        <div class="text-green-500 text-[10px] uppercase font-bold tracking-wider">Bajo</div>
+                        <div class="text-green-500 text-[10px]  font-bold tracking-wider">Bajo</div>
                         <div class="text-2xl font-black text-green-600">{{ bajo }}</div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-                        <div class="text-yellow-500 text-[10px] uppercase font-bold tracking-wider">Mod.</div>
+                        <div class="text-yellow-500 text-[10px]  font-bold tracking-wider">Mod.</div>
                         <div class="text-2xl font-black text-yellow-500">{{ moderado }}</div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-                        <div class="text-orange-500 text-[10px] uppercase font-bold tracking-wider">Severo</div>
+                        <div class="text-orange-500 text-[10px]  font-bold tracking-wider">Severo</div>
                         <div class="text-2xl font-black text-orange-500">{{ severo }}</div>
                     </div>
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-                        <div class="text-red-500 text-[10px] uppercase font-bold tracking-wider">Crítico</div>
+                        <div class="text-red-500 text-[10px]  font-bold tracking-wider">Crítico</div>
                         <div class="text-2xl font-black text-red-600">{{ critico }}</div>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                            <thead class="text-xs text-gray-500  bg-gray-50 border-b border-gray-200">
                                 <tr>
                                     <th class="px-6 py-3 font-semibold">Fecha</th>
                                     <th class="px-6 py-3 font-semibold">Evaluado</th>
@@ -218,7 +218,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{% url 'ver_ficha' ficha.id %}" class="text-blue-600 font-bold hover:text-blue-800 text-xs uppercase hover:underline">Ver Ficha</a>
+                                        <a href="{% url 'ver_ficha' ficha.id %}" class="text-blue-600 font-bold hover:text-blue-800 text-xs  hover:underline">Ver Ficha</a>
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -247,7 +247,7 @@
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                            <thead class="text-xs text-gray-500  bg-gray-50 border-b border-gray-200">
                                 <tr>
                                     <th class="px-6 py-3">Nombre</th>
                                     <th class="px-6 py-3">Código</th>
@@ -268,7 +268,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{% url 'detalle_usuario' enc.pk %}" class="text-blue-600 font-bold hover:underline text-xs uppercase">Ver Perfil</a>
+                                        <a href="{% url 'detalle_usuario' enc.pk %}" class="text-blue-600 font-bold hover:underline text-xs ">Ver Perfil</a>
                                     </td>
                                 </tr>
                                 {% empty %}

@@ -3,10 +3,10 @@ from .views import mis_encuestas,registrar_ficha,ver_ficha, exportar_excel,lista
 
 urlpatterns = [
     path('', mis_encuestas, name='fichas_root'),
-    path('mis-encuestas/', mis_encuestas, name='mis_encuestas'),
+    path('mis-fichas/', mis_encuestas, name='mis_encuestas'),
     path('nueva-ficha-riesgo/', registrar_ficha, name='registrar_ficha'),
     path('ver-ficha/<int:ficha_id>/',ver_ficha, name='ver_ficha'),
-    path('mis-fichas/', listar_mis_fichas, name='listar_fichas'),
+    path('mis-fichas-socio-familiares/', listar_mis_fichas, name='listar_fichas'),
     path('ficha/editar/<int:ficha_id>/', editar_ficha, name='editar_ficha'),
     path('exportar-excel/', exportar_excel, name='exportar_excel'),
 

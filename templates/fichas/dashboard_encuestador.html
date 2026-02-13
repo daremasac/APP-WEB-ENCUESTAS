@@ -18,7 +18,7 @@
                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Realizar Nueva Encuesta
+                Realizar Nueva Ficha Socio-Familiar
             </a>
             <a href="{% url 'exportar_excel' %}?{{ request.GET.urlencode }}"
                 class="inline-flex items-center px-4 py-2 ms-2 border border-gray-300 rounded-lg shadow-sm text-[12px] md:text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
@@ -35,27 +35,27 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-5">
         <div class="col-span-2 sm:col-span-1 bg-white shadow rounded-lg border border-gray-100 p-3 sm:p-4 flex flex-row sm:flex-col justify-between items-center sm:items-start">
-            <dt class="text-xs font-bold text-gray-500 uppercase">Total</dt>
+            <dt class="text-xs font-bold text-gray-500 ">Total</dt>
             <dd class="text-2xl font-extrabold text-gray-900">{{ total }}</dd>
         </div>
 
          <div class="bg-white shadow rounded-lg border-l-4 border-green-500 p-2 sm:p-4 text-center sm:text-left">
-            <dt class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase truncate">Bajo</dt>
+            <dt class="text-[10px] sm:text-xs font-bold text-gray-500  truncate">Bajo</dt>
             <dd class="text-lg sm:text-2xl font-bold text-green-600 leading-none mt-1">{{ bajo }}</dd>
         </div>
 
         <div class="bg-white shadow rounded-lg border-l-4 border-yellow-500 p-2 sm:p-4 text-center sm:text-left">
-            <dt class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase truncate">Moderado</dt>
+            <dt class="text-[10px] sm:text-xs font-bold text-gray-500  truncate">Moderado</dt>
             <dd class="text-lg sm:text-2xl font-bold text-yellow-600 leading-none mt-1">{{ moderado }}</dd>
         </div>
 
         <div class="bg-white shadow rounded-lg border-l-4 border-orange-500 p-2 sm:p-4 text-center sm:text-left">
-            <dt class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase truncate">Severo</dt>
+            <dt class="text-[10px] sm:text-xs font-bold text-gray-500  truncate">Severo</dt>
             <dd class="text-lg sm:text-2xl font-bold text-orange-600 leading-none mt-1">{{ severo }}</dd>
         </div>
 
         <div class="bg-white shadow rounded-lg border-l-4 border-red-500 p-2 sm:p-4 text-center sm:text-left">
-            <dt class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase truncate">Crítico</dt>
+            <dt class="text-[10px] sm:text-xs font-bold text-gray-500  truncate">Crítico</dt>
             <dd class="text-lg sm:text-2xl font-bold text-red-600 leading-none mt-1">{{ critico }}</dd>
         </div>
     </div>
@@ -103,11 +103,11 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Fecha</th>
-                        <th class="px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Estudiante</th>
-                        <th class="hidden sm:table-cell px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">DNI</th>
-                        <th class="hidden sm:table-cell px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Puntaje</th>
-                        <th class="px-2 py-2 text-center text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Riesgo</th>
+                        <th class="px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500  tracking-wider whitespace-nowrap">Fecha</th>
+                        <th class="px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500  tracking-wider whitespace-nowrap">Estudiante</th>
+                        <th class="hidden sm:table-cell px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500  tracking-wider whitespace-nowrap">DNI</th>
+                        <th class="hidden sm:table-cell px-2 py-2 text-left text-[10px] sm:text-xs font-bold text-gray-500  tracking-wider whitespace-nowrap">Puntaje</th>
+                        <th class="px-2 py-2 text-center text-[10px] sm:text-xs font-bold text-gray-500  tracking-wider whitespace-nowrap">Riesgo</th>
                         <th class="px-2 py-2"><span class="sr-only">Ver</span></th>
                     </tr>
                 </thead>

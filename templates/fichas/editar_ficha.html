@@ -27,13 +27,13 @@
     <div class="space-y-8">
         <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                <h3 class="font-bold text-gray-800 uppercase text-xs">1. Datos Personales y Cabecera</h3>
+                <h3 class="font-bold text-gray-800  text-xs">1. Datos Personales y Cabecera</h3>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {% for field in form %}
                     <div class="{% if field.name == 'direccion_domicilio' or field.name == 'observaciones_familia' %}md:col-span-2{% else %}md:col-span-1{% endif %}">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">
+                        <label class="block text-xs font-bold text-gray-500  mb-1">
                             {{ field.label }}
                         </label>
                         {{ field }}
@@ -53,7 +53,7 @@
         {% for dimension in dimensiones %}
         <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="bg-indigo-600 px-6 py-3 border-b border-indigo-700">
-                <h3 class="font-bold text-white uppercase text-xs">{{ dimension.nombre }}</h3>
+                <h3 class="font-bold text-white  text-xs">{{ dimension.nombre }}</h3>
             </div>
             <div class="divide-y divide-gray-100">
                 {% for pregunta in dimension.preguntas.all %}

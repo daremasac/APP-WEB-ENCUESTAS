@@ -23,7 +23,7 @@
                     {% if form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>{% endif %}
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Contraseña *</label>
                     {{ form.password }}
                     {% if form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>{% endif %}
                 </div>
@@ -58,23 +58,23 @@
                     {% if form.dni.errors %}<p class="text-red-500 text-xs mt-1">{{ form.dni.errors.0 }}</p>{% endif %}
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Fecha Nacimiento</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Fecha Nacimiento *</label>
                     {{ form.fecha_nacimiento }}
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Edad</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Edad *</label>
                     {{ form.edad }}
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Sexo</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Sexo *</label>
                     {{ form.sexo }}
                 </div>
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono / Celular</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Teléfono / Celular *</label>
                     {{ form.telefono }}
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Dirección</label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Dirección *</label>
                     {{ form.direccion }}
                 </div>
             </div>
@@ -96,7 +96,7 @@
                         {% if form.numero_colegiatura.errors %}<p class="text-red-500 text-xs mt-1">{{ form.numero_colegiatura.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Centro de Labores</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Centro de Labores *</label>
                         {{ form.centro_labores }}
                         {% if form.centro_labores.errors %}<p class="text-red-500 text-xs mt-1">{{ form.centro_labores.errors.0 }}</p>{% endif %}
                     </div>
@@ -110,16 +110,16 @@
                 </h3>
                 <div class="grid gap-6 mb-6 md:grid-cols-3">
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Código Alumno *</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Código *</label>
                         {{ form.codigo }}
                         {% if form.codigo.errors %}<p class="text-red-500 text-xs mt-1">{{ form.codigo.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Institución</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Institución*</label>
                         {{ form.institucion_procedencia }}
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Ciclo *</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">CIP </label>
                         {{ form.ciclo }}
                         {% if form.ciclo.errors %}<p class="text-red-500 text-xs mt-1">{{ form.ciclo.errors.0 }}</p>{% endif %}
                     </div>
@@ -129,14 +129,14 @@
                         {% if form.especialidad.errors %}<p class="text-red-500 text-xs mt-1">{{ form.especialidad.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Supervisor Asignado</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Supervisor Asignado*</label>
                         {{ form.supervisor_asignado }}
                         <p class="text-xs text-gray-500 mt-1">Selecciona al docente a cargo.</p>
                     </div>
                     <div>
                         <label class="block mb-2 text-sm font-medium text-gray-900">Institución Asignada</label>
                         {{ form.institucion_asignada }}
-                        <p class="text-xs text-gray-500 mt-1">Lugar donde hará las encuestas.</p>
+                        <p class="text-xs text-gray-500 mt-1">Lugar donde se realizarán las fichas SocioFamiliar.</p>
                     </div>
                 </div>
             </div>

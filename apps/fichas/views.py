@@ -13,10 +13,10 @@ from django.db import transaction
 #apartado del administrador
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib import messages
+
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from django.db import IntegrityError
 # Importar modelos y forms
 from .models import Institucion, Dimension, Pregunta
 from .forms import InstitucionForm, DimensionForm, PreguntaForm
@@ -30,6 +30,8 @@ from django.http import HttpResponse
 def es_admin(user):
     return user.is_authenticated and user.rol == 'ADMIN'
 
+def es_supervisor(user):
+    return user.is_authenticated and user.rol == 'SUPERVISOR'
 
 # =======================================================
 
@@ -225,7 +227,7 @@ from .models import FichaEvaluacion
 
 from .models import FichaEvaluacion, Institucion # Importamos Institucion
 
-@login_required
+@user_passes_test(es_supervisor)
 def listar_mis_fichas(request):
     # 1. Obtener parámetros de búsqueda
     # Usamos el ID de la institución para una búsqueda más precisa
@@ -467,17 +469,26 @@ def gestion_institucion(request, pk=None):
         form = InstitucionForm(instance=instancia)
         
     return render(request, 'configuracion/form_generico.html', {
-        'form': form, 'titulo': titulo, 'back_url': 'lista_instituciones'
+        'form': form, 
+        'titulo': titulo, 
+        'back_url': 'lista_instituciones',
+        'instancia': instancia  # <--- IMPORTANTE: pasar la instancia para el JS
     })
+
 
 @user_passes_test(es_admin)
 def eliminar_institucion(request, pk):
     item = get_object_or_404(Institucion, pk=pk)
+    nombre = item.nombre
     try:
         item.delete()
-        messages.success(request, 'Institución eliminada.')
-    except:
-        messages.error(request, 'No se puede eliminar porque tiene fichas asociadas.')
+        messages.success(request, f'La institución "{nombre}" ha sido eliminada correctamente.')
+    except IntegrityError:
+        # Este error ocurre si hay Fichas vinculadas a esta Institución
+        messages.error(request, f'No se puede eliminar "{nombre}" porque existen fichas de evaluación registradas bajo esta institución.')
+    except Exception:
+        messages.error(request, 'Ocurrió un error inesperado al intentar eliminar.')
+        
     return redirect('lista_instituciones')
 
 # =======================================================

@@ -169,6 +169,8 @@ class UsuarioAdminForm(forms.ModelForm):
         label="Sexo"
     )
 
+    
+
     class Meta:
         model = Usuario
         fields = [
@@ -182,12 +184,35 @@ class UsuarioAdminForm(forms.ModelForm):
             'supervisor_asignado', 'institucion_asignada'
         ]
         widgets = {
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_nacimiento': forms.DateInput(
+                format='%Y-%m-%d', # Indica a Django cómo enviar el dato al HTML
+                attrs={
+                    'type': 'date', 
+                    'class': ESTILO_BASE,
+                    'autocomplete': 'off'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         self.user_sesion = kwargs.pop('user_sesion', None)
         super().__init__(*args, **kwargs)
+
+        # --- AGREGA ESTO AQUÍ ---
+        if 'institucion_asignada' in self.fields:
+            self.fields['institucion_asignada'].empty_label = "Seleccionar"
+        
+        if 'institucion_procedencia' in self.fields:
+            # Si quieres que aparezca "Seleccionar" o dejar el default de la UNT
+            self.fields['institucion_procedencia'].empty_label = "Seleccionar"
+
+        if 'supervisor_asignado' in self.fields:
+            self.fields['supervisor_asignado'].empty_label = "Seleccionar"
+
+        
+        if self.instance and self.instance.pk and self.instance.fecha_nacimiento:
+            # Forzamos el formato ISO (YYYY-MM-DD) que exige el input type="date"
+            self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')
         
         # 1. Aplicar estilos base a TODO
         for field_name, field in self.fields.items():
@@ -211,14 +236,7 @@ class UsuarioAdminForm(forms.ModelForm):
             if campo in self.fields:
                 self.fields[campo].required = False
 
-        # 7. LÓGICA DE PERMISOS (Aquí usamos self.user_sesion que capturamos arriba)
-        # if self.user_sesion and self.user_sesion.rol == 'SUPERVISOR':
-        #     if 'rol' in self.fields:
-        #         self.fields['rol'].widget = forms.HiddenInput()
-        #         self.fields['rol'].initial = 'ENCUESTADOR'
-            
-        #     if 'supervisor_asignado' in self.fields:
-        #         self.fields['supervisor_asignado'].widget = forms.HiddenInput()
+       
 
         # 2. Checkbox bonito
         self.fields['is_active'].widget.attrs.update({'class': 'w-5 h-5 text-brand-600 rounded focus:ring-brand-500 border-gray-300'})
@@ -262,7 +280,7 @@ class UsuarioAdminForm(forms.ModelForm):
 
         if rol == 'ENCUESTADOR':
             if not cleaned_data.get('codigo'): self.add_error('codigo', 'Campo obligatorio.')
-            if not cleaned_data.get('ciclo'): self.add_error('ciclo', 'Campo obligatorio.')
+            # if not cleaned_data.get('ciclo'): self.add_error('ciclo', 'Campo obligatorio.')
             if not cleaned_data.get('especialidad'): self.add_error('especialidad', 'Campo obligatorio.')
             if not cleaned_data.get('institucion_procedencia'): self.add_error('institucion_procedencia', 'Campo obligatorio.')
 
@@ -335,7 +353,10 @@ class EncuestadorForm(UsuarioAdminForm):
         ]
         widgets = {
             'password': forms.PasswordInput(attrs={'placeholder': 'Contraseña temporal', 'class': 'w-full ...'}),
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_nacimiento': forms.DateInput(
+                format='%Y-%m-%d', # <--- OBLIGATORIO para que el navegador lo lea
+                attrs={'type': 'date'}
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -348,7 +369,7 @@ class EncuestadorForm(UsuarioAdminForm):
                 del self.fields[campo]
         
         # Ajustamos textos para que sean amigables
-        self.fields['codigo'].label = "Código de Alumno/Agente de campo"
+        self.fields['codigo'].label = "Código de Profesional"
         self.fields['institucion_procedencia'].label = "Universidad / Instituto"
 
         self.fields['nombres'].required = True
@@ -358,11 +379,12 @@ class EncuestadorForm(UsuarioAdminForm):
         self.fields['email'].required = True
         self.fields['dni'].required = True
         self.fields['telefono'].required = True
-        self.fields['direccion'].required = True 
+        self.fields['direccion'].required = True
+        self.fields['ciclo'].required = False
         # Campos condicionales
         campos_condicionales = [
             'institucion_procedencia', 
-            'codigo', 'ciclo', 'especialidad', 'institucion_asignada'
+            'codigo', 'especialidad', 'institucion_asignada'
         ]
         for campo in campos_condicionales:
             if campo in self.fields:

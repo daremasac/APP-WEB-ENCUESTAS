@@ -38,25 +38,9 @@
         <div class="group bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Fichas Hoy</p>
+                    <p class="text-xs font-bold text-gray-500  tracking-wider">Fichas Hoy</p>
                     <p class="text-4xl font-black text-gray-800 mt-2">{{ kpi_hoy }}</p>
-                    {% if cambio_porcentual > 0 %}
-                    <p class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 3.5L15 9H5L10 3.5z"/>
-                        </svg>
-                        +{{ cambio_porcentual }}% vs ayer
-                    </p>
-                    {% elif cambio_porcentual < 0 %}
-                    <p class="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
-                        <svg class="w-3 h-3 rotate-180" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 3.5L15 9H5L10 3.5z"/>
-                        </svg>
-                        {{ cambio_porcentual }}% vs ayer
-                    </p>
-                    {% else %}
-                    <p class="text-xs text-gray-500 font-semibold mt-1">Sin cambios</p>
-                    {% endif %}
+                    
                 </div>
                 <div class="bg-gradient-to-br from-blue-500 to-indigo-500 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +54,7 @@
         <div class="group bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Fichas</p>
+                    <p class="text-xs font-bold text-gray-500  tracking-wider">Total Fichas</p>
                     <p class="text-4xl font-black text-gray-800 mt-2">{{ kpi_total_fichas }}</p>
                     <p class="text-xs text-gray-500 font-semibold mt-1">Registro histórico</p>
                 </div>
@@ -86,7 +70,7 @@
         <div class="group bg-white hover:bg-gradient-to-br hover:from-red-50 hover:to-orange-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Casos Críticos</p>
+                    <p class="text-xs font-bold text-gray-500  tracking-wider">Casos Críticos</p>
                     <p class="text-4xl font-black text-red-600 mt-2">{{ kpi_casos_criticos }}</p>
                     <p class="text-xs text-gray-500 font-semibold mt-1">Requieren atención</p>
                 </div>
@@ -102,7 +86,7 @@
         <div class="group bg-white hover:bg-gradient-to-br hover:from-emerald-50 hover:to-teal-50 p-6 rounded-2xl shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Agente de campo</p>
+                    <p class="text-xs font-bold text-gray-500  tracking-wider">Profesionales</p>
                     <p class="text-4xl font-black text-gray-800 mt-2">{{ kpi_encuestadores }}</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-1">Activos</p>
                 </div>
@@ -247,17 +231,13 @@
                     <div class="p-3 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors">
                         <div class="flex items-center justify-between mb-2">
                             <p class="font-bold text-gray-800 text-sm">{{ inst.nombre|truncatechars:40 }}</p>
-                            <span class="text-2xl font-black text-purple-600">{{ inst.total }}</span>
+                            
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-md font-mono">
                                 {{ inst.codigo_modular }}
                             </span>
-                            {% if inst.casos_riesgo > 0 %}
-                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-md font-semibold">
-                                {{ inst.casos_riesgo }} en riesgo
-                            </span>
-                            {% endif %}
+                           
                         </div>
                     </div>
                     {% empty %}
@@ -285,7 +265,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="text-xs text-gray-500 uppercase bg-gray-50/80">
+                <thead class="text-xs text-gray-500  bg-gray-50/80">
                     <tr>
                         <th class="px-6 py-3 font-bold text-left">Evaluado</th>
                         <th class="px-6 py-3 font-bold text-left">Institución</th>

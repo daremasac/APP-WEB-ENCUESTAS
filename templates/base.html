@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Encuestas{% endblock %}</title>
+    <title>{% block title %}Ficha SocioFamiliar{% endblock %}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -151,6 +151,8 @@
     {% url 'dashboard_admin' as url_admin_dashboard %}
     {% url 'lista_usuarios' as url_admin_list %}
 
+    {% url 'listar_fichas' as url_fichas_list %}
+
     {% url 'lista_instituciones' as url_config_instituciones %}
     {% url 'lista_banco_preguntas' as url_config_banco %}
 
@@ -232,22 +234,22 @@
 
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col justify-between ">
             <ul class="space-y-1 font-medium text-sm">
-
                 <li>
+                    {% if user.rol != 'ADMIN' %}
                     {% if user.rol == 'ADMIN' %}
                     <a href="{{ url_admin_dashboard }}"
-                        class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
+                        class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group 
                            {% if request.path == url_admin_dashboard %}sidebar-active{% else %}text-gray-600{% endif %}">
                         {% elif user.rol == 'SUPERVISOR' %}
-                        <a href="{{ url_supervisor }}" class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
-                           {% if request.path == url_supervisor %}sidebar-active{% else %}text-gray-600{% endif %}">
+                        <a href="{{ url_admin_dashboard }}" class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
+                           {% if request.path == url_admin_dashboard %}sidebar-active{% else %}text-gray-600{% endif %}">
                             {% else %}
                             <a href="{{ url_encuestador }}" class="flex items-center p-3 rounded-lg sidebar-item transition-all duration-200 group
                            {% if request.path == url_encuestador %}sidebar-active{% else %}text-gray-600{% endif %}">
                                 {% endif %}
 
                                 <svg class="w-5 h-5 transition duration-75 text-gray-400 group-hover:text-gray-900"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                    aria-hidden="true"  xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                                     viewBox="0 0 22 21">
                                     <path
                                         d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
@@ -257,17 +259,18 @@
 
                                 <span class="ms-3">
                                     {% if user.rol == 'ADMIN' %}Panel General
-                                    {% elif user.rol == 'SUPERVISOR' %}Mi Equipo (Inicio)
-                                    {% else %}Mis Encuestas{% endif %}
+                                    {% elif user.rol == 'SUPERVISOR' %}Dashboard 
+                                    {% else %}Mis Fichas{% endif %}
                                 </span>
                             </a>
+                            {% endif %}
                 </li>
 
                 <li class="my-4 border-t border-gray-100"></li>
 
                 {% if user.rol == 'ADMIN' %}
                 <li>
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400  tracking-wider">Administración
                     </div>
                 </li>
                 <li>
@@ -286,7 +289,7 @@
                 </li>
 
                 <li>
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400  tracking-wider mt-4">
                         Configuración</div>
                 </li>
                 <li>
@@ -317,14 +320,15 @@
 
                 {% if user.rol == 'SUPERVISOR' %}
                 <li>
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Supervisión
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400  tracking-wider">Supervisión
                     </div>
                 </li>
 
+               
                 <li>
                     <a href="{{ url_supervisor }}"
                         class="flex items-center p-3 rounded-lg group transition duration-150
-           {% if '/mi-equipo/' in request.path %} bg-indigo-50 text-indigo-700 font-bold {% else %} text-gray-600 hover:bg-gray-100 {% endif %}">
+                            {% if '/mi-equipo/' in request.path %} bg-indigo-50 text-indigo-700 font-bold {% else %} text-gray-600 hover:bg-gray-100 {% endif %}">
 
                         <svg class="w-5 h-5 transition duration-75 {% if '/mi-equipo/' in request.path %} text-indigo-600 {% else %} text-gray-400 group-hover:text-gray-900 {% endif %}"
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -337,7 +341,7 @@
                 </li>
 
                 <li>
-                    <a href="{% url 'listar_fichas' %}"
+                    <a href="{{url_fichas_list}}"
                         class="flex items-center p-3 rounded-lg group transition duration-150
                         {% if '/mis-fichas/' in request.path or '/ver-ficha/' in request.path %} bg-indigo-50 text-indigo-700 font-bold {% else %} text-gray-600 hover:bg-gray-100 {% endif %}">
 
@@ -355,7 +359,7 @@
 
                 {% if user.rol == 'ENCUESTADOR' %}
                 <li>
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Campo</div>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-400  tracking-wider">Campo</div>
                 </li>
                 <li>
                     <a href="{% url 'registrar_ficha' %}"

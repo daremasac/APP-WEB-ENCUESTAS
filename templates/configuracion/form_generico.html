@@ -9,7 +9,7 @@
             <p class="text-sm text-gray-500">Complete los datos solicitados a continuación.</p>
         </div>
 
-        <form method="POST" class="p-8 space-y-6">
+        <form method="POST" id="form-generico" class="p-8 space-y-6">
             {% csrf_token %}
             
             {% for field in form %}
@@ -19,21 +19,53 @@
                 {% if field.errors %}
                     <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
                 {% endif %}
-                {% if field.help_text %}
-                    <p class="text-gray-400 text-xs mt-1">{{ field.help_text }}</p>
-                {% endif %}
             </div>
             {% endfor %}
 
             <div class="pt-4 flex items-center justify-end gap-3">
-                <a href="{% url back_url %}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition text-sm">
+                <a href="{% url back_url %}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 bg-gray-200 font-medium hover:bg-gray-50 transition text-sm">
                     Cancelar
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 text-sm">
+                <button type="button" onclick="confirmarEnvio()" class="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 text-sm">
                     Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function confirmarEnvio() {
+        const esEdicion = "{{ instancia.pk|default:'' }}" !== "";
+        const mensaje = esEdicion ? "¿Deseas actualizar los datos de esta institución?" : "¿Deseas registrar esta nueva institución?";
+        const botonTexto = esEdicion ? "Sí, actualizar" : "Sí, guardar";
+
+        Swal.fire({
+            title: esEdicion ? 'Confirmar Actualización' : 'Confirmar Registro',
+            text: mensaje,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: botonTexto,
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            customClass: {
+                confirmButton: 'text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center',
+                cancelButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Muestra un loading mientras procesa
+                Swal.fire({
+                    title: 'Procesando...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+                // Envía el formulario manualmente
+                document.getElementById('form-generico').submit();
+            }
+        });
+    }
+</script>
 {% endblock %}

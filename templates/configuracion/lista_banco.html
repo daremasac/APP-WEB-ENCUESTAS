@@ -27,9 +27,9 @@
                     <h3 class="font-bold text-gray-800 text-lg">{{ dim.nombre }}</h3>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{% url 'editar_dimension' dim.pk %}" class="text-xs font-bold text-blue-600 hover:underline uppercase">Editar</a>
+                    <a href="{% url 'editar_dimension' dim.pk %}" class="text-xs font-bold text-blue-600 hover:underline ">Editar</a>
                     <span class="text-gray-300">|</span>
-                    <a href="{% url 'eliminar_elemento' 'dimension' dim.pk %}" onclick="return confirm('Se borrarán todas las preguntas dentro. ¿Seguro?')" class="text-xs font-bold text-red-500 hover:underline uppercase">Eliminar</a>
+                    <a href="{% url 'eliminar_elemento' 'dimension' dim.pk %}" onclick="return confirm('Se borrarán todas las preguntas dentro. ¿Seguro?')" class="text-xs font-bold text-red-500 hover:underline ">Eliminar</a>
                 </div>
             </div>
 

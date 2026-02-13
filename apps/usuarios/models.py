@@ -8,7 +8,7 @@ class Usuario(AbstractUser):
     ROLES = (
         ('ADMIN', 'Administrador'),
         ('SUPERVISOR', 'Supervisor'),
-        ('ENCUESTADOR', 'Agente de campo / Alumno'),
+        ('ENCUESTADOR', 'Profesional'),
     )
 
     # --- DATOS GENERALES ---
@@ -30,7 +30,7 @@ class Usuario(AbstractUser):
     
     # --- CAMPOS DE ENCUESTADOR ---
     institucion_procedencia = models.CharField('Institución Procedencia', max_length=100, default='Universidad Nacional de Trujillo – UNT')
-    ciclo = models.CharField('Ciclo', max_length=20, blank=True)
+    ciclo = models.CharField('Cip', max_length=20, blank=True)
     especialidad = models.CharField('Especialidad', max_length=100, blank=True)
     
     supervisor_asignado = models.ForeignKey(

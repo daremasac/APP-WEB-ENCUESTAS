@@ -5,7 +5,7 @@
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Perfil del Encuestador</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Perfil del Profesional</h1>
             <p class="text-sm text-gray-500">Detalle operativo y métricas de desempeño.</p>
         </div>
         <div class="flex gap-3">
@@ -49,16 +49,16 @@
 
                 <div class="mt-6 border-t pt-4 text-left space-y-3 text-sm">
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">DNI / Código</span>
+                        <span class="block text-gray-400  text-xs font-bold">DNI / Código</span>
                         <div class="font-medium text-gray-800">{{ usuario.dni }}</div>
                     </div>
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">Contacto</span>
+                        <span class="block text-gray-400  text-xs font-bold">Contacto</span>
                         <div class="font-medium text-gray-800">{{ usuario.email }}</div>
                         <div class="font-medium text-gray-800">{{ usuario.telefono }}</div>
                     </div>
                     <div>
-                        <span class="block text-gray-400 uppercase text-xs font-bold">Dirección</span>
+                        <span class="block text-gray-400  text-xs font-bold">Dirección</span>
                         <div class="font-medium text-gray-800">{{ usuario.direccion|default:"No registrada" }}</div>
                     </div>
                 </div>
@@ -77,11 +77,11 @@
                     </li>
                     <li class="grid grid-cols-2 gap-2">
                         <div>
-                            <span class="text-gray-500">Ciclo:</span>
+                            <span class="text-gray-500">CIP:</span>
                             <span class="block font-medium text-gray-900">{{ usuario.ciclo|default:"--" }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Cód. Alumno:</span>
+                            <span class="text-gray-500">Cód. Profesional:</span>
                             <span class="block font-medium text-gray-900">{{ usuario.codigo|default:"--" }}</span>
                         </div>
                     </li>
@@ -93,23 +93,23 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="text-gray-500 text-xs uppercase font-bold">Total Fichas</div>
+                    <div class="text-gray-500 text-xs  font-bold">Total Fichas</div>
                     <div class="text-2xl font-bold text-gray-900">{{ total_fichas|default:"0" }}</div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="text-gray-500 text-xs uppercase font-bold">R. Bajo</div>
+                    <div class="text-gray-500 text-xs  font-bold">R. Bajo</div>
                     <div class="text-2xl font-bold text-green-600">{{bajo}}</div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="text-gray-500 text-xs uppercase font-bold">R. Moderado</div>
+                    <div class="text-gray-500 text-xs  font-bold">R. Moderado</div>
                     <div class="text-2xl font-bold text-red-500">{{moderado}}</div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="text-gray-500 text-xs uppercase font-bold">R. severo</div>
+                    <div class="text-gray-500 text-xs  font-bold">R. severo</div>
                     <div class="text-2xl font-bold text-green-600">{{severo}}</div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="text-gray-500 text-xs uppercase font-bold">R. critico</div>
+                    <div class="text-gray-500 text-xs  font-bold">R. critico</div>
                     <div class="text-2xl font-bold text-red-500">{{critico}}</div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
 
                 <div class="overflow-x-auto shadow-md sm:rounded-lg">
                     <table class="w-full text-sm text-left text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <thead class="text-xs text-gray-700  bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3">Fecha Registro</th>
                                 <th scope="col" class="px-6 py-3">Evaluado (Cliente)</th>
@@ -239,7 +239,7 @@
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                             </path>
                                         </svg>
-                                        <p>Este encuestador aún no ha registrado actividad reciente.</p>
+                                        <p>El profesional aún no ha registrado actividad reciente.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -252,7 +252,7 @@
             <div class="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center justify-between">
                 <div>
                     <h4 class="text-red-800 font-bold text-sm">Zona de Peligro</h4>
-                    <p class="text-red-600 text-xs">Eliminar a este encuestador de tu equipo.</p>
+                    <p class="text-red-600 text-xs">Eliminar al profesional de tu equipo.</p>
                 </div>
                 <button onclick="confirmarEliminar('{{ usuario.pk }}', '{{ usuario.nombres }}')"
                     class="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-4 py-2">

@@ -25,7 +25,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-600">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                <thead class="text-xs text-gray-700  bg-gray-50 border-b">
                     <tr>
                         <th class="px-6 py-3">Código</th>
                         <th class="px-6 py-3">Nombre</th>
@@ -46,10 +46,15 @@
                             <a href="{% url 'editar_institucion' item.pk %}" class="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition" title="Editar">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </a>
-                            <form action="{% url 'eliminar_institucion' item.pk %}" method="POST" onsubmit="return confirm('¿Eliminar {{ item.nombre }}?');">
+                            <form id="delete-form-{{ item.pk }}" action="{% url 'eliminar_institucion' item.pk %}" method="POST" class="inline">
                                 {% csrf_token %}
-                                <button type="submit" class="text-red-600 hover:bg-red-50 p-2 rounded-lg transition" title="Eliminar">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <button type="button" 
+                                        onclick="confirmarEliminarInstitucion('{{ item.pk }}', '{{ item.nombre }}')" 
+                                        class="text-red-600 hover:bg-red-50 p-2 rounded-lg transition" 
+                                        title="Eliminar">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
                                 </button>
                             </form>
                         </td>
@@ -62,4 +67,36 @@
         </div>
     </div>
 </div>
+
+<script>
+function confirmarEliminarInstitucion(id, nombre) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `Vas a eliminar la institución "${nombre}". Esta acción no se puede deshacer si no tiene datos asociados.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar permanentemente',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        customClass: {
+                confirmButton: 'text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center',
+                cancelButton: 'text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ms-3'
+            }
+
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Feedback visual de "Eliminando"
+            Swal.fire({
+                title: 'Eliminando...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+            // Enviamos el formulario específico
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    })
+}
+</script>
 {% endblock %}

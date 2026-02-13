@@ -10,7 +10,7 @@
         </div>
         <div class="text-right">
             <span class="block text-3xl font-bold text-blue-700">{{ total_miembros }}</span>
-            <span class="text-xs text-blue-500 uppercase font-bold">Miembros Activos</span>
+            <span class="text-xs text-blue-500  font-bold">Miembros Activos</span>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
 
     <div class="relative overflow-x-auto shadow-sm sm:rounded-lg border border-gray-200 bg-white">
         <table class="w-full text-sm text-left text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+            <thead class="text-xs text-gray-700  bg-gray-50 border-b">
                 <tr>
                     <th scope="col" class="px-6 py-3">Agente de campo</th>
                     <th scope="col" class="px-6 py-3">Contacto</th>
@@ -78,7 +78,7 @@
                             </span>
                             <span class="block text-gray-500">{{ u.especialidad }}</span>
                             <span class="inline-block mt-1 bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">
-                                Ciclo: {{ u.ciclo }}
+                              CIP: {{ u.ciclo }}
                             </span>
                         </div>
                     </td>
@@ -204,7 +204,7 @@
                 });
                 // Redirige a la URL de eliminar (Reutilizamos la lógica del admin por ahora)
                 // Asegúrate que tu vista 'eliminar_usuario' permita al Supervisor borrar sus propios encuestadores
-                window.location.href = `/usuarios/eliminar/${id}/`;
+                window.location.href = `/usuarios/mi-equipo/eliminar/${id}/`;
             }
         })
     }

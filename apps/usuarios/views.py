@@ -79,75 +79,96 @@ from django.db.models import Max, Min
 
 User = get_user_model()
 
-@user_passes_test(es_admin)
+@user_passes_test(es_supervisor)
 def dashboard_admin(request):
     hoy = timezone.now().date()
-    hace_una_semana = hoy - timedelta(days=7)
-    ayer = hoy - timedelta(days=1)
-
+  
+    
     # --- KPI CARDS (Métricas Principales) ---
-    kpi_hoy = FichaEvaluacion.objects.filter(fecha_registro__date=hoy).count()
-    kpi_ayer = FichaEvaluacion.objects.filter(fecha_registro__date=ayer).count()
-    
-    # Cálculo de tendencia porcentual
-    if kpi_ayer > 0:
-        cambio_porcentual = round(((kpi_hoy - kpi_ayer) / kpi_ayer) * 100, 1)
-    else:
-        cambio_porcentual = 100 if kpi_hoy > 0 else 0
+    kpi_hoy = 0
+    kpi_total_fichas = 0
+    kpi_casos_criticos = 0
+    kpi_puntaje_mas_bajo = 0
+    kpi_puntaje_promedio = 0
+    kpi_puntaje_mas_alto = 0
+    todas_las_fichas = FichaEvaluacion.objects.filter(usuario_registra__supervisor_asignado=request.user).all()
 
-    kpi_total_fichas = FichaEvaluacion.objects.count()
     
-    # Casos Críticos: Filtrado por el campo nivel_riesgo de tu modelo
-    kpi_casos_criticos = FichaEvaluacion.objects.filter(
-        Q(nivel_riesgo__icontains='SEVERO') | Q(nivel_riesgo__icontains='CRÍTICO')
-    ).count()
+    for ficha in todas_las_fichas:
+        kpi_total_fichas += 1
+        if ficha.fecha_registro.date() == hoy:
+            kpi_hoy += 1
+        if ficha.nivel_riesgo == 'RIESGO CRÍTICO' or ficha.nivel_riesgo == 'RIESGO SEVERO':
+            kpi_casos_criticos += 1
+    kpi_puntaje_mas_bajo = todas_las_fichas.aggregate(minimo=Min('puntaje_total'))['minimo'] or 0
+    kpi_puntaje_mas_alto = todas_las_fichas.aggregate(maximo=Max('puntaje_total'))['maximo'] or 0
+    kpi_puntaje_promedio = todas_las_fichas.aggregate(promedio=Avg('puntaje_total'))['promedio'] or 0
     
-    kpi_encuestadores = User.objects.filter(fichas_realizadas__isnull=True).distinct().count()
+    
+    kpi_encuestadores = User.objects.filter(supervisor_asignado=request.user).count()
 
-    # --- MÉTRICAS SECUNDARIAS ---
-    kpi_semana = FichaEvaluacion.objects.filter(fecha_registro__date__gte=hace_una_semana).count()
-    kpi_puntaje_promedio = FichaEvaluacion.objects.aggregate(Avg('puntaje_total'))['puntaje_total__avg'] or 0
-    kpi_puntaje_mas_alto = FichaEvaluacion.objects.aggregate(Max('puntaje_total'))['puntaje_total__max'] or 0
-    kpi_puntaje_mas_bajo = FichaEvaluacion.objects.aggregate(Min('puntaje_total'))['puntaje_total__min'] or 0
-    # --- DATOS PARA GRÁFICOS (Chart.js) ---
-    
-    # 1. Tendencia de 7 días
+    # 1. Preparación de variables
     labels_tendencia = []
     data_tendencia = []
-    for i in range(6, -1, -1):
+    for i in range(7, -1, -1):
         dia = hoy - timedelta(days=i)
         labels_tendencia.append(dia.strftime('%d %b'))
-        data_tendencia.append(FichaEvaluacion.objects.filter(fecha_registro__date=dia).count())
+
+        conteo_dia = 0
+
+        for ficha in todas_las_fichas:
+            if ficha.fecha_registro.date() == dia:
+                conteo_dia += 1
+        data_tendencia.append(conteo_dia)
 
     # 2. Distribución de Riesgos (Pie Chart)
-    riesgos_query = FichaEvaluacion.objects.values('nivel_riesgo').annotate(total=Count('id'))
+    riesgos_query = FichaEvaluacion.objects.filter(
+    usuario_registra__supervisor_asignado=request.user
+    ).values('nivel_riesgo').annotate(total=Count('id'))
+
+    # Generamos las etiquetas y los datos para el gráfico
     riesgos_labels = [r['nivel_riesgo'] or 'Sin Evaluar' for r in riesgos_query]
     riesgos_data = [r['total'] for r in riesgos_query]
 
-    # 3. Top 5 Agentes (Basado en tu related_name='fichas_realizadas')
-    top_encuestadores = User.objects.annotate(
-        total_fichas=Count('fichas_realizadas'),
-        fichas_mes=Count('fichas_realizadas', filter=Q(fichas_realizadas__fecha_registro__month=hoy.month))
+    # 3. Top 5 Agentes (Filtrado por el equipo del supervisor logueado)
+    top_encuestadores = Usuario.objects.filter(
+        supervisor_asignado=request.user # Solo encuestadores que reportan a él
+    ).annotate(
+        # Total histórico de fichas de cada encuestador del equipo
+        total_fichas=Count('fichas_realizadas'), 
+        
+        # Fichas realizadas por el encuestador solo en el mes actual
+        fichas_mes=Count(
+            'fichas_realizadas', 
+            filter=Q(fichas_realizadas__fecha_registro__month=hoy.month)
+        )
     ).order_by('-total_fichas')[:5]
 
-    # 4. Top 5 Instituciones
-    top_instituciones = Institucion.objects.annotate(
-        total=Count('fichaevaluacion'),
-        casos_riesgo=Count('fichaevaluacion', filter=Q(fichaevaluacion__nivel_riesgo__icontains='SEVERO'))
-    ).order_by('-total')[:5]
+    # 4. Top 5 Instituciones (Filtrado por el equipo del supervisor logueado)
+    top_instituciones = Institucion.objects.filter(
+        # Filtramos para considerar solo instituciones que tengan fichas de su equipo
+        fichaevaluacion__usuario_registra__supervisor_asignado=request.user
+    ).annotate(
+        # Total de fichas del equipo en esa institución
+        total=Count(
+            'fichaevaluacion', 
+            filter=Q(fichaevaluacion__usuario_registra__supervisor_asignado=request.user)
+        )
+    ).distinct().order_by('-total')[:5]
 
-    # --- ACTIVIDAD RECIENTE ---
-    ultimas_fichas = FichaEvaluacion.objects.select_related(
-        'institucion', 'usuario_registra'
+    # --- ACTIVIDAD RECIENTE (Últimas 8 fichas del equipo del supervisor) ---
+    ultimas_fichas = FichaEvaluacion.objects.filter(
+        usuario_registra__supervisor_asignado=request.user
+    ).select_related(
+        'institucion', 
+        'usuario_registra'
     ).order_by('-fecha_registro')[:8]
 
     context = {
         'kpi_hoy': kpi_hoy,
-        'cambio_porcentual': cambio_porcentual,
         'kpi_total_fichas': kpi_total_fichas,
         'kpi_casos_criticos': kpi_casos_criticos,
         'kpi_encuestadores': kpi_encuestadores,
-        'kpi_semana': kpi_semana,
         'kpi_puntaje_mas_bajo': kpi_puntaje_mas_bajo,
         'kpi_puntaje_mas_alto': kpi_puntaje_mas_alto,
         'kpi_puntaje_promedio': round(kpi_puntaje_promedio, 1),
@@ -276,7 +297,7 @@ def gestionar_usuario(request, pk=None):
 
     return render(request, 'usuarios/form_usuario.html', {'form': form, 'titulo': titulo})
 
-# 3. ELIMINAR (Solo POST para seguridad)
+
 @user_passes_test(es_admin)
 def eliminar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
@@ -284,7 +305,9 @@ def eliminar_usuario(request, pk):
     if usuario == request.user:
         messages.error(request, "No puedes eliminar tu propia cuenta.")
     else:
-        usuario.delete() # O usuario.is_active = False para borrado lógico
+        # usuario.is_active = False
+        # usuario.save() 
+        usuario.delete()
         messages.success(request, "Usuario eliminado correctamente.")
     
     return redirect('lista_usuarios')
@@ -383,7 +406,7 @@ def listar_mi_equipo(request):
         )
 
     # 3. Paginación
-    paginator = Paginator(equipo, 3)
+    paginator = Paginator(equipo, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     context = {
@@ -499,25 +522,28 @@ def ver_detalle_equipo(request, pk):
 
     return render(request, 'usuarios/supervisor/detalle_encuestador.html', context)
 
-@user_passes_test(es_supervisor)
+@login_required
 def eliminar_encuestador_equipo(request, pk):
-    # Seguridad: Solo borro si es mío
-    encuestador = get_object_or_404(Usuario, pk=pk, rol='ENCUESTADOR', supervisor_asignado=request.user)
+    # 1. Validación manual del rol para romper el bucle infinito
+    if request.user.rol != 'SUPERVISOR':
+        messages.error(request, "No tienes permisos para realizar esta acción.")
+        return redirect('dashboard_admin')
+
+    # 2. Seguridad: Solo permite obtener el encuestador si es del equipo del supervisor
+    encuestador = get_object_or_404(
+        Usuario, 
+        pk=pk, 
+        rol='ENCUESTADOR', 
+        supervisor_asignado=request.user
+    )
     
     nombre = encuestador.nombres
-    
-    # OPCIÓN A: Eliminación Física (Borrar de la base de datos)
-    encuestador.delete()
-    
-    # OPCIÓN B (Recomendada): Solo desactivar para no perder historial de fichas
-    # encuestador.is_active = False
-    # encuestador.save()
+
+    encuestador.is_active = False  # Marcamos como inactivo en lugar de eliminar
+    encuestador.save()
     
     messages.success(request, f'{nombre} ha sido eliminado de tu equipo.')
     return redirect('listar_mi_equipo')
-
-
-
 
 
 @login_required
